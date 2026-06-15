@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Study With AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* 하단 탭바 고정을 위한 뷰포트 설정 및 애니메이션 */
+    body {
+      -webkit-tap-highlight-color: transparent;
+    }
+    .screen {
+      display: none;
+    }
+    .screen.active {
+      display: block;
+      animation: fadeIn 0.25s ease-out forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .tabular-nums { font-variant-numeric: tabular-nums; }
+  </style>
+</head>
+<body class="bg-slate-50 flex justify-center text-slate-800 antialiased font-sans selection:bg-emerald-200">
+
+  <div class="w-full max-w-md bg-white min-h-screen shadow-2xl relative flex flex-col pb-20 border-x border-slate-100">
+    
+    <header class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-40">
+      <div class="flex items-center gap-2">
+        <span class="text-xl">🌱</span>
+        <h1 class="font-bold text-lg tracking-tight bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">Study With AI</h1>
+      </div>
+      <div class="bg-emerald-50 text-emerald-700 text-xs px-2.5 py-1 rounded-full font-bold">
+        D-14 시험
+      </div>
+    </header>
+
+    <main class="flex-1 p-4 overflow-y-auto">
+
+      <section id="screen-home" class="screen active space-y-5">
+        <div class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl p-4 border border-emerald-100 flex items-start gap-3 shadow-sm relative overflow-hidden">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500 flex items-center justify-center text-2xl shadow-md shrink-0 animate-bounce" id="sti-emoji">
+            🤖
+          </div>
+          <div class="space-y-1 z-10">
+            <h4 class="text-sm font-bold text-emerald-900 flex items-center gap-1.5">
+              AI 코치 스티(STDY) <span class="text-xs bg-emerald-600 text-white px-1.5 py-0.2 rounded-md font-normal">Active</span>
+            </h4>
+            <p class="text-xs text-slate-600 leading-relaxed font-medium" id="sti-bubble">
+              안녕하세요, 서현님! 오늘의 목표를 달성하면 캐릭터가 더 크게 성장할 수 있어요! 스티가 늘 응원하고 있답니다 ✨
+            </p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="space-y-0.5">
+              <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider">나의 캐릭터</span>
+              <h3 class="text-xl font-extrabold tracking-tight">Lv. <span id="char-level">12</span> 서현</h3>
+            </div>
+            <div class="flex items-center gap-1 text-amber-500 font-bold bg-amber-50 px-2.5 py-1 rounded-full text-xs">
+              <i data-lucide="flame" class="w-3.5 h-3.5 fill-current"></i> <span id="char-days">45</span>일째 열공 중
+            </div>
+          </div>
+
+          <div class="flex flex-col items-center justify-center py-4 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+            <div class="text-center space-y-2">
+              <span class="text-6xl select-none" id="avatar-display">👧🏻🎒</span>
+              <p class="text-xs text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-full" id="avatar-title">Lv.12 엔지니어 꿈나무</p>
+            </div>
+            
+            <div class="w-full px-4 mt-4 space-y-1">
+              <div class="flex justify-between text-[10px] text-slate-500 font-semibold">
+                <span>EXP <span id="char-exp">620</span> / <span id="char-maxexp">1000</span></span>
+                <span><span id="char-exp-percent">62</span>%</span>
+              </div>
+              <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                <div id="exp-progress-bar" class="bg-gradient-to-r from-emerald-500 to-teal-500 h-full transition-all duration-500" style="width: 62%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2.5">
+            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100 flex flex-col justify-between">
+              <div class="flex items-center gap-1.5 text-xs text-slate-500 font-semibold mb-1">
+                <i data-lucide="heart" class="w-3.5 h-3.5 text-rose-500"></i> <span>체력</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="flex-1 bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                  <div id="stat-health-bar" class="bg-rose-500 h-full" style="width: 80%;"></div>
+                </div>
+                <span id="stat-health-val" class="text-xs font-bold text-slate-700">80</span>
+              </div>
+            </div>
+            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100 flex flex-col justify-between">
+              <div class="flex items-center gap-1.5 text-xs text-slate-500 font-semibold mb-1">
+                <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-500"></i> <span>집중력</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="flex-1 bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                  <div id="stat-focus-bar" class="bg-amber-500 h-full" style="width: 75%;"></div>
+                </div>
+                <span id="stat-focus-val" class="text-xs font-bold text-slate-700">75</span>
+              </div>
+            </div>
+            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100 flex flex-col justify-between">
+              <div class="flex items-center gap-1.5 text-xs text-slate-500 font-semibold mb-1">
+                <i data-lucide="award" class="w-3.5 h-3.5 text-blue-500"></i> <span>의지</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="flex-1 bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                  <div id="stat-will-bar" class="bg-blue-500 h-full" style="width: 90%;"></div>
+                </div>
+                <span id="stat-will-val" class="text-xs font-bold text-slate-700">90</span>
+              </div>
+            </div>
+            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100 flex flex-col justify-between">
+              <div class="flex items-center gap-1.5 text-xs text-slate-500 font-semibold mb-1">
+                <i data-lucide="book-open" class="w-3.5 h-3.5 text-purple-500"></i> <span>지식</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="flex-1 bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                  <div id="stat-knowledge-bar" class="bg-purple-500 h-full" style="width: 85%;"></div>
+                </div>
+                <span id="stat-knowledge-val" class="text-xs font-bold text-slate-700">85</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm flex items-center justify-between">
+          <div class="space-y-1">
+            <h4 class="text-sm font-bold">오늘의 목표 진행률</h4>
+            <p class="text-xs text-slate-400">총 4개 과목 관리 중</p>
+          </div>
+          <div class="w-14 h-14 flex items-center justify-center rounded-full bg-emerald-50 text-emerald-700 font-extrabold text-sm border-2 border-emerald-500">
+            40%
+          </div>
+        </div>
+
+        <div class="pt-2 text-center">
+          <button onclick="toggleTiredStatus()" class="text-[11px] text-slate-400 underline hover:text-slate-600 transition">
+            [시뮬레이션] 아바타 상태(정상/지침) 강제 스위칭
+          </button>
+        </div>
+      </section>
+
+
+      <section id="screen-planner" class="screen space-y-4">
+        <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
+          <h3 class="text-base font-extrabold tracking-tight mb-1">AI 스티(STDY) 플래너</h3>
+          <p class="text-xs text-slate-400">서현님의 학업 수준에 맞춰 자동으로 생성된 오늘 학습 리스트입니다.</p>
+        </div>
+
+        <div class="space-y-2" id="planner-list">
+          </div>
+      </section>
+
+
+      <section id="screen-timer" class="screen">
+        <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm text-center space-y-6">
+          <div class="space-y-1">
+            <span id="timer-mode-badge" class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full uppercase">
+              🔥 집 중 모 드
+            </span>
+            <h3 class="text-lg font-bold pt-2">현재 목표 과목: <span id="current-timer-subject" class="text-emerald-700">전자회로</span></h3>
+          </div>
+
+          <div class="w-48 h-48 rounded-full border-[6px] border-emerald-500 flex flex-col items-center justify-center mx-auto shadow-inner bg-slate-50">
+            <span id="timer-clock" class="text-4xl font-black text-slate-800 tabular-nums tracking-tight">25:00</span>
+            <span class="text-[10px] text-slate-400 font-bold uppercase mt-1">Focus Time</span>
+          </div>
+
+          <div class="flex justify-center gap-3">
+            <button id="btn-timer-toggle" onclick="toggleTimer()" class="flex items-center gap-1.5 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold transition text-sm shadow-md rounded-xl">
+              <i data-lucide="play" class="w-4 h-4"></i> <span id="btn-timer-text">집중 시작</span>
+            </button>
+            <button onclick="resetTimer()" class="p-2.5 rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50 transition">
+              <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <div class="pt-2 border-t border-slate-100 text-left">
+            <label class="text-xs font-bold text-slate-400 block mb-1.5">집중할 과목 변경</label>
+            <div class="flex gap-1.5 overflow-x-auto pb-1" id="subject-selector">
+              </div>
+          </div>
+        </div>
+      </section>
+
+
+      <section id="screen-notes" class="screen space-y-4">
+        <div class="flex justify-between items-center">
+          <div>
+            <h3 class="text-base font-bold">AI 오답노트</h3>
+            <p class="text-xs text-slate-400">망각 곡선 주기에 따른 복습 알림</p>
+          </div>
+          <button onclick="toggleAddForm()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-2.5 py-1.5 rounded-lg flex items-center gap-1 font-bold transition shadow-sm">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i> 오답 등록
+          </button>
+        </div>
+
+        <form id="note-form" onsubmit="addWrongNote(event)" class="hidden bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-3">
+          <div>
+            <label class="text-[11px] font-bold text-slate-500 block mb-1">과목</label>
+            <select id="form-subject" class="w-full text-xs p-2 rounded-lg bg-white border border-slate-200">
+              <option value="전자회로">전자회로</option>
+              <option value="전기기기">전기기기</option>
+              <option value="영어">영어</option>
+              <option value="전기설비">전기설비</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-[11px] font-bold text-slate-500 block mb-1">틀린 문제 제목</label>
+            <input type="text" id="form-title" required placeholder="예: 커패시터 용량 계산 문제" class="w-full text-xs p-2 rounded-lg bg-white border border-slate-200">
+          </div>
+          <div>
+            <label class="text-[11px] font-bold text-slate-500 block mb-1">틀린 원인 분석 (AI 진단용)</label>
+            <input type="text" id="form-reason" required placeholder="예: 단위 변환 실수 (µF → F)" class="w-full text-xs p-2 rounded-lg bg-white border border-slate-200">
+          </div>
+          <button type="submit" class="w-full bg-slate-800 text-white text-xs py-2 rounded-lg font-bold hover:bg-slate-900 transition">
+            AI 진단 및 에이전트 등록
+          </button>
+        </form>
+
+        <div id="wrong-note-list" class="space-y-2.5">
+          </div>
+      </section>
+
+
+      <section id="screen-character" class="screen space-y-5">
+        <div class="text-center space-y-1">
+          <h3 class="text-base font-bold">나의 아바타 쇼케이스</h3>
+          <p class="text-xs text-slate-400">레벨 조건 충족 시 특수 전문가 의상이 자동으로 해금됩니다.</p>
+        </div>
+
+        <div class="bg-slate-900 text-white rounded-xl p-6 text-center space-y-3 relative overflow-hidden shadow-md">
+          <div class="absolute top-2 left-2 bg-emerald-500 text-slate-900 text-[10px] px-2 py-0.5 rounded font-black uppercase" id="current-outfit-badge">
+            새내기 룩
+          </div>
+          <div class="text-7xl py-2 select-none animate-pulse" id="character-room-avatar">
+            👧🏻🎒
+          </div>
+          <div>
+            <span class="text-xs text-emerald-400 font-bold">TOTAL STUDY TIME</span>
+            <p class="text-lg font-black tracking-wider text-slate-100"><span id="char-total-time">220</span>시간 <span id="char-total-min">30</span>분</p>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <label class="text-xs font-bold text-slate-400 block">장착 의상 변경</label>
+          <div id="outfit-slots" class="space-y-1.5">
+            </div>
+        </div>
+      </section>
+
+    </main>
+
+    <nav class="absolute bottom-0 left-0 right-0 h-16 bg-white border-t border-slate-100 flex items-center justify-around px-2 z-50">
+      <button onclick="switchTab('home', this)" class="tab-btn flex flex-col items-center justify-center flex-1 h-full text-emerald-600 font-semibold">
+        <div class="p-1 rounded-xl bg-emerald-50 text-emerald-600"><i data-lucide="home" class="w-5 h-5"></i></div>
+        <span class="text-[10px] mt-0.5">홈</span>
+      </button>
+      <button onclick="switchTab('planner', this)" class="tab-btn flex flex-col items-center justify-center flex-1 h-full text-slate-400 hover:text-slate-600">
+        <div class="p-1 rounded-xl"><i data-lucide="calendar" class="w-5 h-5"></i></div>
+        <span class="text-[10px] mt-0.5">플래너</span>
+      </button>
+      <button onclick="switchTab('timer', this)" class="tab-btn flex flex-col items-center justify-center flex-1 h-full text-slate-400 hover:text-slate-600">
+        <div class="p-1 rounded-xl"><i data-lucide="timer" class="w-5 h-5"></i></div>
+        <span class="text-[10px] mt-0.5">집중</span>
+      </button>
+      <button onclick="switchTab('notes', this)" class="tab-btn flex flex-col items-center justify-center flex-1 h-full text-slate-400 hover:text-slate-600">
+        <div class="p-1 rounded-xl"><i data-lucide="book-open" class="w-5 h-5"></i></div>
+        <span class="text-[10px] mt-0.5">오답</span>
+      </button>
+      <button onclick="switchTab('character', this)" class="tab-btn flex flex-col items-center justify-center flex-1 h-full text-slate-400 hover:text-slate-600">
+        <div class="p-1 rounded-xl"><i data-lucide="user" class="w-5 h-5"></i></div>
+        <span class="text-[10px] mt-0.5">캐릭터</span>
+      </button>
+    </nav>
+  </div>
+
+  <script>
+    // 1. 글로벌 데이터 애플리케이션 상태 (State) 관리
+    const state = {
+      character: {
+        level: 12,
+        exp: 620,
+        maxExp: 1000,
+        consecutiveDays: 45,
+        totalStudyTime: 13230, // 분 단위 역산 데이터 (220시간 30분)
+        status: 'active', // 'active' | 'tired'
+        stats: { health: 80, focus: 75, willpower: 90, knowledge: 85 },
+        outfit: 'student' // 'student' | 'developer' | 'engineer'
+      },
+      plans: [
+        { id: 1, time: '09:00 - 09:40', subject: '전자회로', content: '커패시터 기본 개념 정리', status: 'doing' },
+        { id: 2, time: '10:00 - 10:50', subject: '전기기기', content: '변압기 원리 정리', status: 'todo' },
+        { id: 3, time: '11:00 - 11:30', subject: '영어', content: '단어 50개 암기', status: 'todo' },
+        { id: 4, time: '13:00 - 13:40', subject: '전기설비', content: '전선 및 배선기구 정리', status: 'todo' }
+      ],
+      wrongNotes: [
+        { id: 1, date: '2026.07.01', subject: '전자회로', title: '커패시터 용량 계산 문제', reason: '단위 변환 실수 (µF → F)', interval: 3, resolved: false },
+        { id: 2, date: '2026.06.30', subject: '전기기기', title: '직류회로 전압 계산 문제', reason: '공식 적용 실수', interval: 1, resolved: false }
+      ],
+      timer: {
+        secondsLeft: 25 * 60,
+        isRunning: false,
+        intervalId: null,
+        mode: 'study', // 'study' | 'break'
+        selectedSubject: '전자회로'
+      }
+    };
+
+    const outfitsData = [
+      { id: 'student', name: '새내기 후드티 (Lv.1 기본)', icon: '🎒', req: 1 },
+      { id: 'developer', name: '주니어 체크셔츠 (Lv.10 해금)', icon: '💻', req: 10 },
+      { id: 'engineer', name: '일류 엔지니어 정장 (Lv.30 해금)', icon: '👔', req: 30 }
+    ];
+
+    // 2. 화면 탭 전환 함수
+    function switchTab(screenId, element) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(`screen-${screenId}`).classList.add('active');
+
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('text-emerald-600', 'font-semibold');
+        btn.classList.add('text-slate-400');
+        btn.querySelector('div').classList.remove('bg-emerald-50', 'text-emerald-600');
+      });
+
+      element.classList.add('text-emerald-600', 'font-semibold');
+      element.querySelector('div').classList.add('bg-emerald-50', 'text-emerald-600');
+      
+      // 화면별 새로고침 렌더링 연동
+      if (screenId === 'planner') renderPlanner();
+      if (screenId === 'notes') renderWrongNotes();
+      if (screenId === 'character') renderCharacterRoom();
+    }
+
+    // 3. UI 실시간 동기화 업데이트 렌더러
+    function updateHomeUI() {
+      document.getElementById('char-level').innerText = state.character.level;
+      document.getElementById('char-days').innerText = state.character.consecutiveDays;
+      document.getElementById('char-exp').innerText = state.character.exp;
+      document.getElementById('char-maxexp').innerText = state.character.maxExp;
+      
+      const pct = Math.round((state.character.exp / state.character.maxExp) * 100);
+      document.getElementById('char-exp-percent').innerText = pct;
+      document.getElementById('exp-progress-bar').style.width = `${pct}%`;
+
+      // 4대 스탯 반영
+      document.getElementById('stat-health-val').innerText = state.character.stats.health;
+      document.getElementById('stat-health-bar').style.width = `${state.character.stats.health}%`;
+      document.getElementById('stat-focus-val').innerText = state.character.stats.focus;
+      document.getElementById('stat-focus-bar').style.width = `${state.character.stats.focus}%`;
+      document.getElementById('stat-will-val').innerText = state.character.stats.willpower;
+      document.getElementById('stat-will-bar').style.width = `${state.character.stats.willpower}%`;
+      document.getElementById('stat-knowledge-val').innerText = state.character.stats.knowledge;
+      document.getElementById('stat-knowledge-bar').style.width = `${state.character.stats.knowledge}%`;
+
+      // 캐릭터 외형 바인딩 및 상태 표현
+      const avatarDisplay = document.getElementById('avatar-display');
+      const avatarTitle = document.getElementById('avatar-title');
+      const stiBubble = document.getElementById('sti-bubble');
+      const stiEmoji = document.getElementById('sti-emoji');
+
+      if (state.character.status === 'tired') {
+        avatarDisplay.innerText = '💤👧🏻';
+        avatarDisplay.classList.add('grayscale');
+        avatarTitle.innerText = '캐릭터가 지친 상태입니다';
+        avatarTitle.className = "text-xs text-rose-500 font-bold bg-rose-50 px-2 py-0.5 rounded-full";
+        stiBubble.innerText = "서현님이 많이 지쳐 보여요... 😢 최근 5일간 공부 기록이 저조합니다. 딱 10분만 집중해서 다시 활력을 찾아볼까요?";
+        stiEmoji.innerText = '🌱';
+      } else {
+        avatarDisplay.classList.remove('grayscale');
+        avatarDisplay.innerText = state.character.outfit === 'student' ? '👧🏻🎒' : state.character.outfit === 'developer' ? '👩🏻‍💻✨' : '👩🏻‍💼👔';
+        avatarTitle.innerText = `Lv.${state.character.level} 전문 엔지니어 꿈나무`;
+        avatarTitle.className = "text-xs text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-full";
+        stiBubble.innerText = "안녕하세요, 서현님! 오늘의 플래너 미션을 클리어하면 보상 경험치를 잔뜩 획득할 수 있어요!";
+        stiEmoji.innerText = '🤖';
+      }
+    }
+
+    // [시뮬레이터 유틸] 아바타 상태 강제 전환
+    function toggleTiredStatus() {
+      state.character.status = state.character.status === 'active' ? 'tired' : 'active';
+      updateHomeUI();
+    }
+
+    // 4. 플래너 기능 구현
+    function renderPlanner() {
+      const listContainer = document.getElementById('planner-list');
+      listContainer.innerHTML = '';
+
+      state.plans.forEach(plan => {
+        const div = document.createElement('div');
+        div.onclick = () => {
+          plan.status = plan.status === 'todo' ? 'doing' : plan.status === 'doing' ? 'done' : 'todo';
+          renderPlanner();
+        };
+
+        let badgeClass = 'bg-slate-100 text-slate-400';
+        let statusText = '대기';
+        let borderClass = 'bg-white border-slate-100';
+
+        if (plan.status === 'done') {
+          badgeClass = 'bg-emerald-600 text-white';
+          statusText = '완료';
+          borderClass = 'bg-emerald-50/40 border-emerald-100 opacity-75';
+        } else if (plan.status === 'doing') {
+          badgeClass = 'bg-amber-400 text-slate-900';
+          statusText = '진행중';
+          borderClass = 'bg-white border-amber-300 ring-1 ring-amber-300 shadow-sm';
+        }
+
+        div.className = `p-3.5 rounded-xl border flex items-center justify-between cursor-pointer transition ${borderClass}`;
+        div.innerHTML = `
+          <div class="flex items-start gap-3">
+            <div class="space-y-0.5">
+              <div class="flex items-center gap-2">
+                <span class="text-[10px] text-slate-400 font-bold">${plan.time}</span>
+                <span class="text-[9px] px-1.5 py-0.2 rounded font-extrabold bg-slate-100 text-slate-700">${plan.subject}</span>
+              </div>
+              <p class="text-xs font-bold ${plan.status === 'done' ? 'line-through text-slate-400' : 'text-slate-700'}">${plan.content}</p>
+            </div>
+          </div>
+          <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full ${badgeClass}">${statusText}</span>
+        `;
+        listContainer.appendChild(div);
+      });
+    }
+
+    // 5. 집중 타이머 기능 구현
+    function renderTimerSelector() {
+      const container = document.getElementById('subject-selector');
+      container.innerHTML = '';
+      const subjects = ['전자회로', '전기기기', '영어', '전기설비', '자율학습'];
+      
+      subjects.forEach(sub => {
+        const btn = document.createElement('button');
+        btn.innerText = sub;
+        const isActive = state.timer.selectedSubject === sub;
+        btn.className = `text-xs px-3 py-1.5 rounded-lg shrink-0 transition font-medium ${isActive ? 'bg-slate-800 text-white font-semibold' : 'bg-slate-100 text-slate-600'}`;
+        btn.onclick = () => {
+          if (state.timer.isRunning) return;
+          state.timer.selectedSubject = sub;
+          document.getElementById('current-timer-subject').innerText = sub;
+          renderTimerSelector();
+        };
+        container.appendChild(btn);
+      });
+    }
+
+    function toggleTimer() {
+      const btnText = document.getElementById('btn-timer-text');
+      if (state.timer.isRunning) {
+        // 일시정지 분기
+        clearInterval(state.timer.intervalId);
+        state.timer.isRunning = false;
+        btnText.innerText = '집중 시작';
+      } else {
+        // 타이머 카운트다운 가동
+        state.timer.isRunning = true;
+        btnText.innerText = '일시 정지';
+        state.timer.intervalId = setInterval(() => {
+          state.timer.secondsLeft--;
+          
+          // 시간 출력 포맷팅
+          const m = Math.floor(state.timer.secondsLeft / 60).toString().padStart(2, '0');
+          const s = (state.timer.secondsLeft % 60).toString().padStart(2, '0');
+          document.getElementById('timer-clock').innerText = `${m}:${s}`;
+
+          if (state.timer.secondsLeft <= 0) {
+            clearInterval(state.timer.intervalId);
+            state.timer.isRunning = false;
+            btnText.innerText = '집중 시작';
+            
+            if (state.timer.mode === 'study') {
+              alert('🎯 집중 시간 25분 종료! 경험치 보상을 획득합니다.');
+              rewardGrowth(25); // 25분 보상 지급 가동
+              state.timer.mode = 'break';
+              state.timer.secondsLeft = 5 * 60;
+              document.getElementById('timer-mode-badge').innerText = '☕ 휴 식 모 드';
+            } else {
+              alert('🌱 휴식 완료! 다시 힘내서 시작해봐요.');
+              state.timer.mode = 'study';
+              state.timer.secondsLeft = 25 * 60;
+              document.getElementById('timer-mode-badge').innerText = '🔥 집 중 모 드';
+            }
+            resetTimer();
+          }
+        }, 1000);
+      }
+    }
+
+    function resetTimer() {
+      clearInterval(state.timer.intervalId);
+      state.timer.isRunning = false;
+      state.timer.secondsLeft = state.timer.mode === 'study' ? 25 * 60 : 5 * 60;
+      document.getElementById('timer-clock').innerText = state.timer.mode === 'study' ? "25:00" : "05:00";
+      document.getElementById('btn-timer-text').innerText = '집중 시작';
+    }
+
+    // 타이머 보상 기반 아바타 육성 수식 엔진
+    function rewardGrowth(minutes) {
+      state.character.totalStudyTime += minutes;
+      state.character.exp += minutes * 4; // 분당 가중치 경험치 보상
+
+      // 레벨업 트리거 알고리즘
+      if (state.character.exp >= state.character.maxExp) {
+        state.character.exp -= state.character.maxExp;
+        state.character.level++;
+        alert(`🎉 축하합니다! 서현 레벨이 Lv.${state.character.level}(으)로 상승했습니다!`);
+      }
+      
+      // 능력치 가운트 업
+      state.character.stats.health = Math.min(100, state.character.stats.health + 2);
+      state.character.stats.focus = Math.min(100, state.character.stats.focus + 4);
+      state.character.stats.willpower = Math.min(100, state.character.stats.willpower + 3);
+      state.character.stats.knowledge = Math.min(100, state.character.stats.knowledge + 5);
+
+      updateHomeUI();
+    }
+
+
+    // 6. AI 오답노트 모듈
+    function toggleAddForm() {
+      const form = document.getElementById('note-form');
+      form.classList.toggle('hidden');
+    }
+
+    function addWrongNote(e) {
+      e.preventDefault();
+      const titleInput = document.getElementById('form-title');
+      const reasonInput = document.getElementById('form-reason');
+      const subSelect = document.getElementById('form-subject');
+
+      const newNote = {
+        id: Date.now(),
+        date: new Date().toLocaleDateString('ko-KR'),
+        subject: subSelect.value,
+        title: titleInput.value,
+        reason: reasonInput.value,
+        interval: 3,
+        resolved: false
+      };
+
+      state.wrongNotes.unshift(newNote);
+      titleInput.value = '';
+      reasonInput.value = '';
+      toggleAddForm();
+      renderWrongNotes();
+    }
+
+    function toggleNoteResolve(id) {
+      const note = state.wrongNotes.find(n => n.id === id);
+      if (note) note.resolved = !note.resolved;
+      renderWrongNotes();
+    }
+
+    function renderWrongNotes() {
+      const container = document.getElementById('wrong-note-list');
+      container.innerHTML = '';
+
+      state.wrongNotes.forEach(note => {
+        const div = document.createElement('div');
+        div.className = `p-4 rounded-xl border transition-all ${note.resolved ? 'bg-slate-50 border-slate-200 opacity-60' : 'bg-white border-slate-100 shadow-sm'}`;
+        div.innerHTML = `
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md font-bold">${note.subject}</span>
+              <h4 class="text-sm font-bold mt-1 ${note.resolved ? 'line-through text-slate-400' : 'text-slate-800'}">${note.title}</h4>
+            </div>
+            <button onclick="toggleNoteResolve(${note.id})" class="text-slate-400 hover:text-emerald-600">
+              ${note.resolved ? '✅' : '❌'}
+            </button>
+          </div>
+          <div class="mt-2.5 bg-rose-50 border border-rose-100 rounded-lg p-2 text-[11px] text-rose-900 font-medium">
+            <span class="font-bold text-rose-700">⚠️ AI 원인진단:</span> ${note.reason}
+          </div>
+          <div class="mt-3 flex justify-between items-center text-[10px] text-slate-400 font-semibold">
+            <span>등록일: ${note.date}</span>
+            <span class="text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">AI 추천 복습주기: ${note.interval}일 후</span>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+
+    // 7. 아바타 커스터마이징 룸
+    function renderCharacterRoom() {
+      document.getElementById('char-total-time').innerText = Math.floor(state.character.totalStudyTime / 60);
+      document.getElementById('char-total-min').innerText = state.character.totalStudyTime % 60;
+
+      const avatarBox = document.getElementById('character-room-avatar');
+      avatarBox.innerText = state.character.outfit === 'student' ? '👧🏻🎒' : state.character.outfit === 'developer' ? '👩🏻‍💻✨' : '👩🏻‍💼👔';
+      
+      const badge = document.getElementById('current-outfit-badge');
+      badge.innerText = state.character.outfit === 'student' ? '새내기 룩' : state.character.outfit === 'developer' ? '개발자 룩' : '엔지니어 룩';
+
+      const slots = document.getElementById('outfits-slots');
+      const container = document.getElementById('outfit-slots');
+      container.innerHTML = '';
+
+      outfitsData.forEach(o => {
+        const isLocked = state.character.level < o.req;
+        const isSelected = state.character.outfit === o.id;
+        
+        const btn = document.createElement('button');
+        btn.disabled = isLocked;
+        btn.onclick = () => {
+          state.character.outfit = o.id;
+          renderCharacterRoom();
+          updateHomeUI();
+        };
+
+        btn.className = `w-full p-3 rounded-xl border text-left flex items-center justify-between transition ${isSelected ? 'border-emerald-500 bg-emerald-50/40' : 'border-slate-100 bg-slate-50'} ${isLocked ? 'opacity-40 cursor-not-allowed' : ''}`;
+        btn.innerHTML = `
+          <div class="flex items-center gap-2.5">
+            <span class="text-xl">${o.icon}</span>
+            <span class="text-xs font-bold text-slate-700">${o.name}</span>
+          </div>
+          <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-200 text-slate-600">
+            ${isLocked ? '잠금 🔒' : isSelected ? '착용중' : '선택'}
+          </span>
+        `;
+        container.appendChild(btn);
+      });
+    }
+
+    // 앱 초기 가동 및 렌더링 동기화
+    window.onload = () => {
+      lucide.createIcons();
+      updateHomeUI();
+      renderTimerSelector();
+    };
+  </script>
+</body>
+</html>
