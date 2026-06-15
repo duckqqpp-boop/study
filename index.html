@@ -194,7 +194,7 @@
         <div class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl p-4 border border-emerald-100 flex items-start gap-3 shadow-sm">
           <div class="w-9 h-9 rounded-xl bg-emerald-500 flex items-center justify-center text-lg shadow-md shrink-0">🤖</div>
           <div class="space-y-0.5">
-            <h4 class="text-xs font-bold text-emerald-900 flex items-center gap-1.5">AI 코치 스티(STDY) <span class="text-[8px] bg-emerald-600 text-white px-1 py-0.2 rounded">로컬 모드</span></h4>
+            <h4 class="text-xs font-bold text-emerald-900 flex items-center gap-1.5">AI 코치 스티(STDY) <span class="text-[8px] bg-emerald-600 text-white px-1 py-0.2 rounded">로컬 전용</span></h4>
             <p id="sti-dynamic-speech" class="text-xs text-slate-600 leading-relaxed font-medium">로딩 중...</p>
           </div>
         </div>
@@ -375,7 +375,7 @@
       '자기계발': ['기초 코딩 독학 프로그래밍', '인공지능 프롬프트 기획']
     };
 
-    // 로컬 스토리지에 관리될 완전 일치 코어 상태 설계
+    // 로컬 스토리지 데이터 코어 상태 정의
     let globalState = {
       isInitialized: false, 
       user: { name: '', mainGoal: '', subGoal: '', ddayStr: '', tier: '중급', limitMinutes: 60 },
@@ -406,28 +406,28 @@
       goToView(`#ob-step-${stepNum}`);
     }
 
-    // 🌟 핵심 게이트웨이: 재방문 여부 필터링
+    // ⚡ 순수 데이터 게이트웨이 구동
+    // 원인 모를 자동 호출을 원천 봉쇄하기 위해 브라우저 렌더가 끝나면 로컬 스토리지 데이터만 직접 스캔합니다.
     window.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
       setGender('female');
 
       setTimeout(() => {
-        const savedData = localStorage.getItem('stdy_user_data');
-        if (savedData) {
+        const savedLocalRecord = localStorage.getItem('stdy_user_data');
+        if (savedLocalRecord) {
           try {
-            const parsed = JSON.parse(savedData);
+            const parsed = JSON.parse(savedLocalRecord);
             globalState = { ...globalState, ...parsed };
-            // 기존 가입 데이터가 검출되면 온보딩 없이 바로 대시보드 해제 (재방문 흐름)
             unlockAppMainLayout();
           } catch(e) {
-            console.error("저장소 유효성 오류, 초기화 상태로 전환", e);
+            console.error("저장소 포맷 정합성 유효 오류, 초기 진입으로 전환");
             goToView('#screen-welcome');
           }
         } else {
-          // 데이터가 비어있으면 처음 소개 화면 표시 (첫 방문 흐름)
+          // 데이터가 없는 최초 상태 -> 소개 화면 노출
           goToView('#screen-welcome');
         }
-      }, 600); 
+      }, 500); 
     });
 
     function saveStateToLocalStorage() {
@@ -447,7 +447,6 @@
       }
     }
 
-    // 온보딩 입력 단계별 처리 로직들
     function submitObStep1() {
       const name = document.getElementById('reg-username').value.trim();
       if(!name) { alert('이름을 입력해 주세요.'); return; }
@@ -523,7 +522,6 @@
       document.getElementById('preview-avatar-desc').innerText = `${globalState.avatar.gender==='male'?'남성':'여성'} 모험가 커스텀 중`;
     }
 
-    // 최종 데이터 구조 세팅 및 localStorage 저장 로직
     function finalizeOnboardingAndSaveLocal() {
       const ddayVal = document.getElementById('reg-target-date').value;
       if(!ddayVal) { alert('시험 목표 날짜를 선택해 주세요.'); return; }
@@ -531,7 +529,6 @@
       globalState.user.ddayStr = ddayVal;
       globalState.user.limitMinutes = parseInt(document.getElementById('reg-daily-time').value);
 
-      // 더미 공부 루틴 데이터 초기 생성 배치
       const currentSub = globalState.user.subGoal;
       globalState.todoList = [
         { id: 101, slot: '오전 과제', target: currentSub, text: '기초 핵심 개념 정독 및 서머리 노트 요약', clear: false },
@@ -540,7 +537,7 @@
       ];
 
       globalState.isInitialized = true;
-      saveStateToLocalStorage(); // 데이터 커밋
+      saveStateToLocalStorage(); 
       unlockAppMainLayout();
     }
 
