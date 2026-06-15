@@ -1,0 +1,45 @@
+name: Deploy Study With AI
+
+on:
+  push:
+    branches:
+      - main
+
+# 💡 2026년 Node.js 24 환경 강제 적용 (경고 메시지 완벽 해결)
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      # 1. 깃허브 저장소의 코드를 체크아웃
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # 2. 깃허브 페이지 배포를 위한 환경 설정
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      # 3. HTML 파일들을 배포 아티팩트로 업로드
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      # 4. 깃허브 서버 주소로 실제 배포 실행
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
