@@ -40,7 +40,7 @@
 
       <section id="screen-gate-loading" class="screen active flex-col items-center justify-center pt-48 space-y-4">
         <div class="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-        <p class="text-xs text-slate-400 font-medium">로컬 스토리지 데이터 동기화 확인 중...</p>
+        <p class="text-xs text-slate-400 font-medium">로컬 저장소 데이터 확인 중...</p>
       </section>
 
       <section id="screen-welcome" class="screen flex-col justify-between min-h-[78vh] text-center">
@@ -61,7 +61,7 @@
             </div>
             <div class="flex gap-2.5 items-start border-t border-slate-200/60 pt-2.5">
               <span class="text-sm">💾</span>
-              <p class="text-[11px] text-slate-400 leading-normal">별도의 로그인 없이 브라우저 내 안전한 로컬 저장소(localStorage)에 나만의 전용 학습 데이터가 실시간 저장됩니다.</p>
+              <p class="text-[11px] text-slate-400 leading-normal">로그인 없이 브라우저의 안전한 로컬 저장소(localStorage)에 나만의 전용 학습 데이터가 실시간 저장됩니다.</p>
             </div>
           </div>
         </div>
@@ -163,55 +163,38 @@
         </div>
         <div class="space-y-1">
           <h3 class="text-lg font-black">나만의 RPG 아바타 설정</h3>
-          <p class="text-xs text-slate-400">성장도에 맞춰 헤어 기어 장비와 등급 타이틀이 강화됩니다.</p>
+          <p class="text-xs text-slate-400">성장도에 맞춰 타이틀과 외형 장비가 강화됩니다.</p>
         </div>
 
         <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl p-5 border border-slate-200 text-center space-y-1 shadow-inner">
           <div id="preview-avatar-emoji" class="text-5xl py-2 tracking-tight select-none">👧🏻🎒</div>
-          <div id="preview-avatar-desc" class="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-3 py-0.5 rounded-full inline-block">여성 사양 로딩</div>
+          <div id="preview-avatar-desc" class="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-3 py-0.5 rounded-full inline-block">외형 로딩 중</div>
         </div>
 
         <div class="space-y-3">
           <div class="space-y-1">
-            <label class="text-[11px] font-bold text-slate-400 block">성별 성향 선택</label>
+            <label class="text-[11px] font-bold text-slate-400 block">성별 스타일 선택</label>
             <div class="grid grid-cols-2 gap-2">
               <button onclick="setGender('male')" id="gender-m" class="p-2.5 text-xs font-bold bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-center gap-1.5">👨 남성</button>
               <button onclick="setGender('female')" id="gender-f" class="p-2.5 text-xs font-bold bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-center gap-1.5">👩 여성</button>
             </div>
           </div>
           <div class="space-y-1">
-            <label class="text-[11px] font-bold text-slate-400 block">스타일 피팅</label>
+            <label class="text-[11px] font-bold text-slate-400 block">캐릭터 특성 매칭</label>
             <div id="hair-slots-container" class="grid grid-cols-2 gap-2"></div>
           </div>
         </div>
 
-        <button onclick="goToObStep(6)" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl text-xs transition shadow-sm">
-          AI 공부 계획 매핑하기
+        <button onclick="finalizeOnboardingAndSaveLocal()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl text-xs transition shadow-sm">
+          설정 완료 및 홈 화면 진입 🚀
         </button>
-      </section>
-
-      <section id="ob-step-6" class="screen flex-col items-center justify-center pt-20 text-center space-y-6">
-        <div class="w-16 h-16 rounded-2xl bg-slate-900 text-white flex items-center justify-center text-3xl animate-bounce shadow-md">🤖</div>
-        <div class="space-y-1.5">
-          <h3 class="text-lg font-black">AI 스티가 맞춤 공부 스케줄을 짜고 있습니다</h3>
-          <p class="text-xs text-slate-400 max-w-xs leading-relaxed">선택하신 도메인과 디데이를 역산하여 매일 수행해야 할 Lv.1 전용 에센셜 미션 트랙을 조립하는 중입니다.</p>
-        </div>
-        <div class="w-full max-w-xs bg-slate-100 h-2 rounded-full overflow-hidden">
-          <div class="bg-emerald-500 h-full w-full origin-left scale-x-0 animate-[progress_2s_ease-in-out_forwards]"></div>
-        </div>
-        <button onclick="finalizeOnboardingAndSaveLocal()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 rounded-xl text-xs shadow-lg transition">
-          승인 및 Lv.1 개인 홈 진입 🚀
-        </button>
-        <style>
-          @keyframes progress { to { transform: scaleX(1); } }
-        </style>
       </section>
 
       <section id="screen-home" class="screen flex-col space-y-4">
         <div class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl p-4 border border-emerald-100 flex items-start gap-3 shadow-sm">
           <div class="w-9 h-9 rounded-xl bg-emerald-500 flex items-center justify-center text-lg shadow-md shrink-0">🤖</div>
           <div class="space-y-0.5">
-            <h4 class="text-xs font-bold text-emerald-900 flex items-center gap-1.5">AI 코치 스티(STDY) <span class="text-[8px] bg-emerald-600 text-white px-1 py-0.2 rounded">로컬 동기화 완료</span></h4>
+            <h4 class="text-xs font-bold text-emerald-900 flex items-center gap-1.5">AI 코치 스티(STDY) <span class="text-[8px] bg-emerald-600 text-white px-1 py-0.2 rounded">로컬 모드</span></h4>
             <p id="sti-dynamic-speech" class="text-xs text-slate-600 leading-relaxed font-medium">로딩 중...</p>
           </div>
         </div>
@@ -263,7 +246,7 @@
 
         <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm flex items-center justify-between">
           <div class="space-y-0.5">
-            <h4 class="text-xs font-bold text-slate-800">오늘의 스케줄 완료율</h4>
+            <h4 class="text-xs font-bold text-slate-800">오늘의 루틴 달성도</h4>
             <p id="dash-todo-summary" class="text-[11px] text-slate-400">0개 완료됨</p>
           </div>
           <div id="dash-todo-pct-circle" class="w-11 h-11 flex items-center justify-center rounded-full bg-emerald-50 text-emerald-700 font-black text-xs border border-emerald-200">0%</div>
@@ -272,8 +255,8 @@
 
       <section id="screen-planner" class="screen flex-col space-y-3">
         <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
-          <h3 class="text-xs font-black mb-0.5">AI 배정 오늘의 일일 루틴</h3>
-          <p class="text-[10px] text-slate-400">선택한 공부 도메인을 분석하여 스티가 실시간 발급한 미션 리스트입니다.</p>
+          <h3 class="text-xs font-black mb-0.5">AI 배정 오늘의 목표 과제</h3>
+          <p class="text-[10px] text-slate-400">설정하신 공부 과목 분석에 맞춰 자동으로 발급된 일일 미션 리스트입니다.</p>
         </div>
         <div id="planner-list-box" class="space-y-2"></div>
       </section>
@@ -281,8 +264,8 @@
       <section id="screen-timer" class="screen flex-col space-y-4">
         <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm text-center space-y-5">
           <div>
-            <span class="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full uppercase tracking-wider">POMODORO AGENT</span>
-            <h3 class="text-xs font-bold pt-4 text-slate-400">현재 집중 타겟 과목: <span id="timer-target-sub-text" class="text-emerald-700 font-black">-</span></h3>
+            <span class="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full uppercase tracking-wider">POMODORO TIMER</span>
+            <h3 class="text-xs font-bold pt-4 text-slate-400">현재 타겟 과목: <span id="timer-target-sub-text" class="text-emerald-700 font-black">-</span></h3>
           </div>
 
           <div class="w-36 h-36 rounded-full border-4 border-emerald-500 flex flex-col items-center justify-center mx-auto shadow-inner bg-slate-50" id="timer-circle-ui">
@@ -300,7 +283,7 @@
           </div>
 
           <div id="evaluation-widget" class="hidden pt-4 border-t border-dashed border-slate-200 space-y-2">
-            <label class="text-[11px] font-bold text-slate-500 block">방금 세션의 본인 몰입 강도를 기록해 주세요 (의지 스탯 반영)</label>
+            <label class="text-[11px] font-bold text-slate-500 block">방금 세션의 집중도를 자가 평가해주세요 (의지 스탯 반영)</label>
             <div class="flex justify-center gap-1">
               <button onclick="commitEvaluation(1)" class="w-8 h-8 rounded-lg bg-slate-100 font-bold text-xs hover:bg-emerald-50">1</button>
               <button onclick="commitEvaluation(2)" class="w-8 h-8 rounded-lg bg-slate-100 font-bold text-xs hover:bg-emerald-50">2</button>
@@ -316,7 +299,7 @@
         <div class="flex justify-between items-center">
           <div>
             <h3 class="text-xs font-black">AI 추적 오답 리포트</h3>
-            <p class="text-[10px] text-slate-400">망각 곡선 파괴 및 오개념 원인 추적 디버깅 아카이브</p>
+            <p class="text-[10px] text-slate-400">틀린 문제와 오개념 원인을 기록하고 디버깅하는 저장소</p>
           </div>
           <button onclick="toggleNoteForm()" class="bg-emerald-600 text-white text-[10px] px-2.5 py-1.5 rounded-xl flex items-center gap-1 font-bold">
             <i data-lucide="plus" class="w-3 h-3"></i> 오답 추가
@@ -325,18 +308,18 @@
 
         <form id="note-form" onsubmit="addWrongNote(event)" class="hidden bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-2.5">
           <div>
-            <label class="text-[10px] font-bold text-slate-400 block mb-0.5">대응 과목 분류</label>
+            <label class="text-[10px] font-bold text-slate-400 block mb-0.5">과목 분류</label>
             <select id="form-sub-select" class="w-full text-xs p-2 rounded-lg bg-white border border-slate-200 focus:outline-none"></select>
           </div>
           <div>
-            <label class="text-[10px] font-bold text-slate-400 block mb-0.5">틀린 문제 요약</label>
-            <input type="text" id="form-title" required placeholder="예: 단상 변압기 병렬 운전 조건 위배" class="w-full text-xs p-2 rounded-lg bg-white border border-slate-200 focus:outline-none">
+            <label class="text-[10px] font-bold text-slate-400 block mb-0.5">틀린 문제 내용</label>
+            <input type="text" id="form-title" required placeholder="예: 단상 변압기 병렬 운전 조건 오류" class="w-full text-xs p-2 rounded-lg bg-white border border-slate-200 focus:outline-none">
           </div>
           <div>
-            <label class="text-[10px] font-bold text-slate-400 block mb-0.5">자가 원인 정밀 분석</label>
-            <input type="text" id="form-reason" required placeholder="예: 극성이 다르면 내부에 대순환 전류가 흐른다는 점 간과" class="w-full text-xs p-2 rounded-lg bg-white border border-slate-200 focus:outline-none">
+            <label class="text-[10px] font-bold text-slate-400 block mb-0.5">틀린 원인 분석</label>
+            <input type="text" id="form-reason" required placeholder="예: 극성이 다르면 대순환 전류가 흐른다는 점을 잊음" class="w-full text-xs p-2 rounded-lg bg-white border border-slate-200 focus:outline-none">
           </div>
-          <button type="submit" class="w-full bg-slate-900 text-white text-xs py-2.5 rounded-lg font-bold">로컬 저장소 전송 및 아카이빙</button>
+          <button type="submit" class="w-full bg-slate-900 text-white text-xs py-2.5 rounded-lg font-bold">오답 저장하기</button>
         </form>
 
         <div id="notes-list-box" class="space-y-2"></div>
@@ -346,12 +329,12 @@
         <div class="bg-slate-900 text-white rounded-2xl p-5 text-center space-y-2 relative shadow-md">
           <div id="room-avatar-emoji" class="text-6xl py-1 select-none">👧🏻🎒</div>
           <div>
-            <span class="text-[9px] text-emerald-400 font-bold uppercase tracking-wider">TOTAL ACCUMULATED TIME</span>
+            <span class="text-[9px] text-emerald-400 font-bold uppercase tracking-wider">누적 집중 시간</span>
             <p class="text-sm font-black text-slate-100"><span id="room-total-hours">0</span>시간 <span id="room-total-mins">0</span>분</p>
           </div>
         </div>
         <div class="space-y-1.5">
-          <label class="text-xs font-bold text-slate-400 block">누적 공부 시간 달성 업적 보상</label>
+          <label class="text-xs font-bold text-slate-400 block">달성 시간별 잠금 해제 업적</label>
           <div id="room-inventory-grid" class="grid grid-cols-2 gap-2"></div>
         </div>
       </section>
@@ -392,9 +375,9 @@
       '자기계발': ['기초 코딩 독학 프로그래밍', '인공지능 프롬프트 기획']
     };
 
-    // 로컬 스토리지에 세이브/로드할 코어 통합 상태 정의
+    // 로컬 스토리지에 관리될 완전 일치 코어 상태 설계
     let globalState = {
-      isInitialized: false, // 첫 가입 유무 검증 플래그
+      isInitialized: false, 
       user: { name: '', mainGoal: '', subGoal: '', ddayStr: '', tier: '중급', limitMinutes: 60 },
       avatar: { level: 1, exp: 0, maxExp: 100, streak: 1, totalTime: 0, gender: 'female', trait: '🎒', status: 'active', stats: { hp: 100, fp: 30, wp: 10, kp: 0 } },
       todoList: [],
@@ -408,14 +391,12 @@
       ]
     };
 
-    // 단방향 스크린 뷰 라우터
     function goToView(targetSelector) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       const activeEl = document.querySelector(targetSelector);
       if(activeEl) activeEl.classList.add('active');
     }
 
-    // 온보딩 단계 전개 제어
     function goToObStep(stepNum) {
       goToView(`#ob-step-${stepNum}`);
       if(stepNum === 2) drawMainGoalsUI();
@@ -425,7 +406,7 @@
       goToView(`#ob-step-${stepNum}`);
     }
 
-    // 런타임 진입 시 로컬 스토리지 검사 (재방문 흐름 제어 핵심)
+    // 🌟 핵심 게이트웨이: 재방문 여부 필터링
     window.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
       setGender('female');
@@ -435,351 +416,322 @@
         if (savedData) {
           try {
             const parsed = JSON.parse(savedData);
-            // 기존 데이터 병합 연산
             globalState = { ...globalState, ...parsed };
+            // 기존 가입 데이터가 검출되면 온보딩 없이 바로 대시보드 해제 (재방문 흐름)
             unlockAppMainLayout();
           } catch(e) {
-            console.error("로컬 데이터 포맷 오류 발생, 초기화 진행", e);
+            console.error("저장소 유효성 오류, 초기화 상태로 전환", e);
             goToView('#screen-welcome');
           }
         } else {
-          // 데이터가 전혀 없는 상태 ➔ [첫 방문] 온보딩 게이트 오픈
+          // 데이터가 비어있으면 처음 소개 화면 표시 (첫 방문 흐름)
           goToView('#screen-welcome');
         }
-      }, 800); // 부드러운 전환을 위한 게이트 딜레이 효과
-    </script>
+      }, 600); 
+    });
 
-    <script>
-      // 스토리지 세이브 로직
-      function saveStateToLocalStorage() {
-        localStorage.setItem('stdy_user_data', JSON.stringify({
-          isInitialized: globalState.isInitialized,
-          user: globalState.user,
-          avatar: globalState.avatar,
-          todoList: globalState.todoList,
-          wrongNotes: globalState.wrongNotes
-        }));
+    function saveStateToLocalStorage() {
+      localStorage.setItem('stdy_user_data', JSON.stringify({
+        isInitialized: globalState.isInitialized,
+        user: globalState.user,
+        avatar: globalState.avatar,
+        todoList: globalState.todoList,
+        wrongNotes: globalState.wrongNotes
+      }));
+    }
+
+    function resetAllData() {
+      if(confirm('모든 레벨, 스탯, 공부 루틴 및 오답노트가 삭제됩니다. 초기화할까요?')) {
+        localStorage.removeItem('stdy_user_data');
+        window.location.reload();
       }
+    }
 
-      // 데이터 전체 초기화 (상단 동기화 리프레시 버튼 연동)
-      function resetAllData() {
-        if(confirm('🚨 주의! 지금까지 기록된 모든 레벨, 스탯, 공부 일지 및 오답노트 데이터가 영구 삭제됩니다. 계속할까요?')) {
-          localStorage.removeItem('stdy_user_data');
-          window.location.reload();
-        }
-      }
+    // 온보딩 입력 단계별 처리 로직들
+    function submitObStep1() {
+      const name = document.getElementById('reg-username').value.trim();
+      if(!name) { alert('이름을 입력해 주세요.'); return; }
+      globalState.user.name = name;
+      goToObStep(2);
+    }
 
-      // 온보딩 STEP 1 완료
-      function submitObStep1() {
-        const name = document.getElementById('reg-username').value.trim();
-        if(!name) { alert('이름 또는 닉네임을 입력하세요.'); return; }
-        globalState.user.name = name;
-        goToObStep(2);
-      }
+    function drawMainGoalsUI() {
+      const box = document.getElementById('main-goal-options-box');
+      box.innerHTML = '';
+      Object.keys(studyTree).forEach(key => {
+        const btn = document.createElement('button');
+        btn.innerText = `🎯 ${key}`;
+        btn.className = `w-full p-4 text-xs font-bold text-left rounded-xl border transition ${globalState.user.mainGoal === key ? 'bg-emerald-50 border-2 border-emerald-500 text-emerald-700':'bg-slate-50 border-slate-200'}`;
+        btn.onclick = () => { globalState.user.mainGoal = key; drawMainGoalsUI(); };
+        box.appendChild(btn);
+      });
+    }
 
-      // 온보딩 대분류 그리기
-      function drawMainGoalsUI() {
-        const box = document.getElementById('main-goal-options-box');
-        box.innerHTML = '';
-        Object.keys(studyTree).forEach(key => {
-          const btn = document.createElement('button');
-          btn.innerText = `🎯 ${key}`;
-          btn.className = `w-full p-4 text-xs font-bold text-left rounded-xl border transition ${globalState.user.mainGoal === key ? 'bg-emerald-50 border-2 border-emerald-500 text-emerald-700':'bg-slate-50 border-slate-200'}`;
-          btn.onclick = () => {
-            globalState.user.mainGoal = key;
-            drawMainGoalsUI();
-          };
-          box.appendChild(btn);
-        });
-      }
+    function submitObStep2() {
+      if(!globalState.user.mainGoal) { alert('공부 목적을 선택해 주세요.'); return; }
+      drawSubGoalsUI();
+      goToObStep(3);
+    }
 
-      // 온보딩 STEP 2 완료
-      function submitObStep2() {
-        if(!globalState.user.mainGoal) { alert('공부 목적 대분류를 한 개 선택해 주세요.'); return; }
-        drawSubGoalsUI();
-        goToObStep(3);
-      }
+    function drawSubGoalsUI() {
+      const box = document.getElementById('sub-goal-options-box');
+      box.innerHTML = '';
+      const pool = studyTree[globalState.user.mainGoal] || [];
+      pool.forEach(sub => {
+        const btn = document.createElement('button');
+        btn.innerText = sub;
+        btn.className = `w-full p-3.5 text-left text-xs font-bold rounded-xl border transition ${globalState.user.subGoal === sub ? 'bg-emerald-600 text-white border-emerald-600':'bg-white border-slate-200'}`;
+        btn.onclick = () => { globalState.user.subGoal = sub; drawSubGoalsUI(); };
+        box.appendChild(btn);
+      });
+    }
 
-      // 온보딩 소분류 과목 그리기
-      function drawSubGoalsUI() {
-        const box = document.getElementById('sub-goal-options-box');
-        box.innerHTML = '';
-        const pool = studyTree[globalState.user.mainGoal] || [];
-        pool.forEach(sub => {
-          const btn = document.createElement('button');
-          btn.innerText = sub;
-          btn.className = `w-full p-3.5 text-left text-xs font-bold rounded-xl border transition ${globalState.user.subGoal === sub ? 'bg-emerald-600 text-white border-emerald-600':'bg-white border-slate-200'}`;
-          btn.onclick = () => {
-            globalState.user.subGoal = sub;
-            drawSubGoalsUI();
-          };
-          box.appendChild(btn);
-        });
-      }
+    function submitObStep3() {
+      if(!globalState.user.subGoal) { alert('상세 공부 과목을 지정하세요.'); return; }
+      goToObStep(4);
+    }
 
-      // 온보딩 STEP 3 완료
-      function submitObStep3() {
-        if(!globalState.user.subGoal) { alert('상세 공부 과목 분야를 지정하세요.'); return; }
-        goToObStep(4);
-      }
+    function selectTier(t, btn) {
+      globalState.user.tier = t;
+      document.querySelectorAll('.tier-btn').forEach(b => b.className = "tier-btn p-3 text-xs font-bold bg-slate-50 border border-slate-200 rounded-xl text-center");
+      btn.className = "tier-btn p-3 text-xs font-bold bg-emerald-50 border-2 border-emerald-500 text-emerald-700 rounded-xl text-center";
+    }
 
-      function selectTier(t, btn) {
-        globalState.user.tier = t;
-        document.querySelectorAll('.tier-btn').forEach(b => b.className = "tier-btn p-3 text-xs font-bold bg-slate-50 border border-slate-200 rounded-xl text-center");
-        btn.className = "tier-btn p-3 text-xs font-bold bg-emerald-50 border-2 border-emerald-500 text-emerald-700 rounded-xl text-center";
-      }
+    function setGender(g) {
+      globalState.avatar.gender = g;
+      document.getElementById('gender-m').className = g === 'male' ? "p-2.5 text-xs font-bold bg-emerald-50 border-2 border-emerald-500 text-emerald-700 rounded-xl flex items-center justify-center gap-1.5":"p-2.5 text-xs font-bold bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-center gap-1.5";
+      document.getElementById('gender-f').className = g === 'female' ? "p-2.5 text-xs font-bold bg-emerald-50 border-2 border-emerald-500 text-emerald-700 rounded-xl flex items-center justify-center gap-1.5":"p-2.5 text-xs font-bold bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-center gap-1.5";
+      drawHairSlotsUI(); refreshPreviewUI();
+    }
 
-      function setGender(g) {
-        globalState.avatar.gender = g;
-        document.getElementById('gender-m').className = g === 'male' ? "p-2.5 text-xs font-bold bg-emerald-50 border-2 border-emerald-500 text-emerald-700 rounded-xl flex items-center justify-center gap-1.5":"p-2.5 text-xs font-bold bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-center gap-1.5";
-        document.getElementById('gender-f').className = g === 'female' ? "p-2.5 text-xs font-bold bg-emerald-50 border-2 border-emerald-500 text-emerald-700 rounded-xl flex items-center justify-center gap-1.5":"p-2.5 text-xs font-bold bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-center gap-1.5";
-        drawHairSlotsUI(); refreshPreviewUI();
-      }
+    function drawHairSlotsUI() {
+      const box = document.getElementById('hair-slots-container'); box.innerHTML = '';
+      const pool = globalState.avatar.gender === 'male'
+        ? [{n:'숏 컷 스타일', e:'👦'}, {n:'가르마 스타일', e:'🧑'}, {n:'캡 모자 코디', e:'🧢'}]
+        : [{n:'단발 스타일', e:'👧'}, {n:'롱 웨이브 스타일', e:'👩'}, {n:'포니테일 스타일', e:'👱‍♀️'}];
 
-      function drawHairSlotsUI() {
-        const box = document.getElementById('hair-slots-container'); box.innerHTML = '';
-        const pool = globalState.avatar.gender === 'male'
-          ? [{n:'숏 컷 모히칸', e:'👦'}, {n:'댄디 가르마펌', e:'🧑'}, {n:'볼캡 야구모자', e:'🧢'}]
-          : [{n:'단정 단발 보브', e:'👧'}, {n:'엘레강스 볼륨', e:'👩'}, {n:'포니테일 리본', e:'👱‍♀️'}];
+      pool.forEach(h => {
+        const btn = document.createElement('button'); btn.innerText = h.n;
+        btn.className = `p-2.5 text-xs font-semibold rounded-lg border text-center ${globalState.avatar.trait === h.e ? 'bg-emerald-50 border-emerald-500 text-emerald-800 font-bold border-2':'bg-white border-slate-200'}`;
+        btn.onclick = () => { globalState.avatar.trait = h.e; drawHairSlotsUI(); refreshPreviewUI(); };
+        box.appendChild(btn);
+      });
+    }
 
-        pool.forEach(h => {
-          const btn = document.createElement('button'); btn.innerText = h.n;
-          btn.className = `p-2.5 text-xs font-semibold rounded-lg border text-center ${globalState.avatar.trait === h.e ? 'bg-emerald-50 border-emerald-500 text-emerald-800 font-bold border-2':'bg-white border-slate-200'}`;
-          btn.onclick = () => { globalState.avatar.trait = h.e; drawHairSlotsUI(); refreshPreviewUI(); };
-          box.appendChild(btn);
-        });
-      }
+    function refreshPreviewUI() {
+      document.getElementById('preview-avatar-emoji').innerText = globalState.avatar.trait;
+      document.getElementById('preview-avatar-desc').innerText = `${globalState.avatar.gender==='male'?'남성':'여성'} 모험가 커스텀 중`;
+    }
 
-      function getAvatarVisualRepresentation(av) {
-        if (av.status === 'tired') return '💤' + (av.gender === 'male' ? '👦':'👧');
-        return av.trait;
-      }
+    // 최종 데이터 구조 세팅 및 localStorage 저장 로직
+    function finalizeOnboardingAndSaveLocal() {
+      const ddayVal = document.getElementById('reg-target-date').value;
+      if(!ddayVal) { alert('시험 목표 날짜를 선택해 주세요.'); return; }
 
-      function refreshPreviewUI() {
-        document.getElementById('preview-avatar-emoji').innerText = getAvatarVisualRepresentation(globalState.avatar);
-        document.getElementById('preview-avatar-desc').innerText = `${globalState.avatar.gender==='male'?'남성':'여성'} 클래스 · 특성 피팅 중`;
-      }
+      globalState.user.ddayStr = ddayVal;
+      globalState.user.limitMinutes = parseInt(document.getElementById('reg-daily-time').value);
 
-      // 온보딩 스케줄링 승인 및 최종 홈화면 가동 엔진
-      function finalizeOnboardingAndSaveLocal() {
-        const ddayVal = document.getElementById('reg-target-date').value;
-        if(!ddayVal) { alert('시험 목표 데드라인 날짜를 선택해 주십시오.'); goToObStep(4); return; }
+      // 더미 공부 루틴 데이터 초기 생성 배치
+      const currentSub = globalState.user.subGoal;
+      globalState.todoList = [
+        { id: 101, slot: '오전 과제', target: currentSub, text: '기초 핵심 개념 정독 및 서머리 노트 요약', clear: false },
+        { id: 102, slot: '오후 과제', target: currentSub, text: '적중 변형 실전 단원평가 문제 풀이 및 풀이 분석', clear: false },
+        { id: 103, slot: '심야 과제', target: 'AI 오답', text: '오늘 틀린 문제를 선별하여 원인 디버깅 노트 채우기', clear: false }
+      ];
 
-        globalState.user.ddayStr = ddayVal;
-        globalState.user.limitMinutes = parseInt(document.getElementById('reg-daily-time').value);
+      globalState.isInitialized = true;
+      saveStateToLocalStorage(); // 데이터 커밋
+      unlockAppMainLayout();
+    }
 
-        // AI 스티 공부 플랜 미션 데이터 팩 빌드업
-        const currentSub = globalState.user.subGoal;
-        globalState.todoList = [
-          { id: 101, slot: '오전 미션', target: currentSub, text: '기초 핵심 개념 기본서 정독 및 개념노트 요약', clear: false },
-          { id: 102, slot: '오후 미션', target: currentSub, text: '적중 유형 변형 실전 단원평가 12문항 풀이 및 분석', clear: false },
-          { id: 103, slot: '심야 루틴', target: 'AI 오답', text: '틀린 문제를 수집하여 원인 진단 분석 리포트 등록하기', clear: false }
-        ];
+    function unlockAppMainLayout() {
+      document.getElementById('app-header').classList.replace('hidden', 'flex');
+      document.getElementById('app-bottom-nav').classList.replace('hidden', 'flex');
 
-        globalState.isInitialized = true;
-        saveStateToLocalStorage(); // 로컬 스토리지에 최초 영구 수립
-        unlockAppMainLayout();
-      }
+      const targetSub = globalState.user.subGoal;
+      document.getElementById('form-sub-select').innerHTML = `<option value="${targetSub}">${targetSub}</option><option value="AI 공통 오답">AI 공통 오답</option>`;
 
-      // 메인 홈 화면 UI 가동 해제
-      function unlockAppMainLayout() {
-        document.getElementById('app-header').classList.remove('hidden');
-        document.getElementById('app-header').classList.add('flex');
-        document.getElementById('app-bottom-nav').classList.remove('hidden');
-        document.getElementById('app-bottom-nav').classList.add('flex');
+      const diff = new Date(globalState.user.ddayStr) - new Date();
+      const remainDays = Math.ceil(diff / (1000 * 60 * 60 * 24));
+      document.getElementById('header-dday').innerText = remainDays >= 0 ? `D-${remainDays}` : `D+${Math.abs(remainDays)}`;
 
-        const targetSub = globalState.user.subGoal;
-        document.getElementById('form-sub-select').innerHTML = `<option value="${targetSub}">${targetSub}</option><option value="AI 공통 오답">AI 공통 오답</option>`;
+      document.getElementById('dash-username').innerText = globalState.user.name;
+      document.getElementById('timer-target-sub-text').innerText = targetSub;
 
-        // 디데이 실시간 잔여일 연산
-        const diff = new Date(globalState.user.ddayStr) - new Date();
-        const remainDays = Math.ceil(diff / (1000 * 60 * 60 * 24));
-        document.getElementById('header-dday').innerText = remainDays >= 0 ? `D-${remainDays}` : `D+${Math.abs(remainDays)}`;
+      handleTabClick('home', document.querySelector('.tab-btn'));
+    }
 
-        document.getElementById('dash-username').innerText = globalState.user.name;
-        document.getElementById('timer-target-sub-text').innerText = targetSub;
+    function handleTabClick(tabId, element) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      const targetScreen = document.getElementById(`screen-${tabId}`);
+      if(targetScreen) targetScreen.classList.add('active');
 
-        handleTabClick('home', document.querySelector('.tab-btn'));
-      }
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('text-emerald-600', 'font-bold'); btn.classList.add('text-slate-400');
+        btn.querySelector('div').classList.remove('bg-emerald-50', 'text-emerald-600');
+      });
 
-      // 글로벌 네비게이션 탭 라우팅 인터페이스
-      function handleTabClick(tabId, element) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        const targetScreen = document.getElementById(`screen-${tabId}`);
-        if(targetScreen) targetScreen.classList.add('active');
+      element.classList.add('text-emerald-600', 'font-bold');
+      element.querySelector('div').classList.add('bg-emerald-50', 'text-emerald-600');
 
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-          btn.classList.remove('text-emerald-600', 'font-bold'); btn.classList.add('text-slate-400');
-          btn.querySelector('div').classList.remove('bg-emerald-50', 'text-emerald-600');
-        });
+      syncStateToDashboard();
+      if(tabId === 'planner') drawPlannerUI();
+      if(tabId === 'notes') drawNotesUI();
+      if(tabId === 'character') drawCharacterRoomUI();
+    }
 
-        element.classList.add('text-emerald-600', 'font-bold');
-        element.querySelector('div').classList.add('bg-emerald-50', 'text-emerald-600');
+    function syncStateToDashboard() {
+      const av = globalState.avatar;
+      document.getElementById('dash-level').innerText = av.level;
+      document.getElementById('dash-streak').innerText = av.streak;
+      document.getElementById('dash-exp-text').innerText = av.exp;
+      document.getElementById('dash-exp-pct').innerText = Math.round((av.exp / av.maxExp) * 100);
+      document.getElementById('dash-exp-progress').style.width = `${(av.exp / av.maxExp) * 100}%`;
 
-        syncStateToDashboard();
-        if(tabId === 'planner') drawPlannerUI();
-        if(tabId === 'notes') drawNotesUI();
-        if(tabId === 'character') drawCharacterRoomUI();
-      }
+      document.getElementById('stat-hp').innerText = `${av.stats.hp} / 100`;
+      document.getElementById('stat-fp').innerText = `${av.stats.fp}분`;
+      document.getElementById('stat-wp').innerText = av.stats.wp;
+      document.getElementById('stat-kp').innerText = av.stats.kp;
 
-      // 대시보드 스탯 연동 데이터 미러링
-      function syncStateToDashboard() {
-        const av = globalState.avatar;
-        document.getElementById('dash-level').innerText = av.level;
-        document.getElementById('dash-streak').innerText = av.streak;
-        document.getElementById('dash-exp-text').innerText = av.exp;
-        document.getElementById('dash-exp-pct').innerText = Math.round((av.exp / av.maxExp) * 100);
-        document.getElementById('dash-exp-progress').style.width = `${(av.exp / av.maxExp) * 100}%`;
+      document.getElementById('dash-avatar-emoji').innerText = av.trait;
+      document.getElementById('sti-dynamic-speech').innerText = `반가워요, ${globalState.user.name} 플레이어! [${globalState.user.subGoal}] 코스가 완벽히 세팅되었습니다. 과제를 터치해 스탯을 쌓으세요!`;
 
-        document.getElementById('stat-hp').innerText = `${av.stats.hp} / 100`;
-        document.getElementById('stat-fp').innerText = `${av.stats.fp}분`;
-        document.getElementById('stat-wp').innerText = av.stats.wp;
-        document.getElementById('stat-kp').innerText = av.stats.kp;
+      const clr = globalState.todoList.filter(t => t.clear).length;
+      const total = globalState.todoList.length;
+      const pct = total > 0 ? Math.round((clr / total) * 100) : 0;
+      document.getElementById('dash-todo-summary').innerText = `총 과제 ${total}개 중 ${clr}개 완료됨`;
+      document.getElementById('dash-todo-pct-circle').innerText = `${pct}%`;
+    }
 
-        document.getElementById('dash-avatar-emoji').innerText = getAvatarVisualRepresentation(av);
-        document.getElementById('sti-dynamic-speech').innerText = `반가워요, ${globalState.user.name} 님! 오늘 집중 타겟 코스 [${globalState.user.subGoal}] 관련 일일 임무 데이터 피드가 정상 연동 중입니다.`;
-
-        const clr = globalState.todoList.filter(t => t.clear).length;
-        const total = globalState.todoList.length;
-        const pct = total > 0 ? Math.round((clr / total) * 100) : 0;
-        document.getElementById('dash-todo-summary').innerText = `총 미션 ${total}개 중 ${clr}개 완료`;
-        document.getElementById('dash-todo-pct-circle').innerText = `${pct}%`;
-      }
-
-      // 플래너 미션 리스트 렌더러
-      function drawPlannerUI() {
-        const box = document.getElementById('planner-list-box'); box.innerHTML = '';
-        globalState.todoList.forEach(todo => {
-          const row = document.createElement('div');
-          row.onclick = () => {
-            todo.clear = !todo.clear;
-            if(todo.clear) {
-              globalState.avatar.exp += 35; globalState.avatar.stats.kp += 5;
-              if(globalState.avatar.exp >= globalState.avatar.maxExp) {
-                globalState.avatar.exp -= globalState.avatar.maxExp;
-                globalState.avatar.level++;
-                alert(`🎉 축하합니다! 레벨 업 달성! 현재 Level: ${globalState.avatar.level}`);
-              }
+    function drawPlannerUI() {
+      const box = document.getElementById('planner-list-box'); box.innerHTML = '';
+      globalState.todoList.forEach(todo => {
+        const row = document.createElement('div');
+        row.onclick = () => {
+          todo.clear = !todo.clear;
+          if(todo.clear) {
+            globalState.avatar.exp += 35; globalState.avatar.stats.kp += 5;
+            if(globalState.avatar.exp >= globalState.avatar.maxExp) {
+              globalState.avatar.exp -= globalState.avatar.maxExp;
+              globalState.avatar.level++;
+              alert(`🎉 LEVEL UP! 플레이어 레벨이 상승했습니다! (현재 Lv.${globalState.avatar.level})`);
             }
-            drawPlannerUI(); syncStateToDashboard(); saveStateToLocalStorage();
-          };
+          }
+          drawPlannerUI(); syncStateToDashboard(); saveStateToLocalStorage();
+        };
 
-          const clr = todo.clear;
-          row.className = `p-3.5 rounded-xl border cursor-pointer transition ${clr ? 'bg-emerald-50/60 border-emerald-200 opacity-60':'bg-white border-slate-100 shadow-sm'}`;
-          row.innerHTML = `
-            <div class="flex justify-between items-center">
-              <div>
-                <span class="text-[9px] font-bold text-slate-400 block">${todo.slot} · ${todo.target}</span>
-                <p class="text-xs font-bold ${clr ? 'line-through text-slate-400':'text-slate-700'}">${todo.text}</p>
-              </div>
-              <span class="text-[9px] font-bold px-2 py-0.5 rounded-md ${clr ? 'bg-emerald-600 text-white':'bg-slate-100 text-slate-400'}">${clr ? 'CLEAR':'진행'}</span>
+        const clr = todo.clear;
+        row.className = `p-3.5 rounded-xl border cursor-pointer transition ${clr ? 'bg-emerald-50/60 border-emerald-200 opacity-60':'bg-white border-slate-100 shadow-sm'}`;
+        row.innerHTML = `
+          <div class="flex justify-between items-center">
+            <div>
+              <span class="text-[9px] font-bold text-slate-400 block">${todo.slot} · ${todo.target}</span>
+              <p class="text-xs font-bold ${clr ? 'line-through text-slate-400':'text-slate-700'}">${todo.text}</p>
             </div>
-          `;
-          box.appendChild(row);
-        });
-      }
+            <span class="text-[9px] font-bold px-2 py-0.5 rounded-md ${clr ? 'bg-emerald-600 text-white':'bg-slate-100 text-slate-400'}">${clr ? 'CLEAR':'대기'}</span>
+          </div>
+        `;
+        box.appendChild(row);
+      });
+    }
 
-      // 집중 몰입 타이머 제어 코어
-      function toggleTimerCore() {
-        const btn = document.getElementById('btn-timer-ctrl-text');
-        const ring = document.getElementById('timer-circle-ui');
+    function toggleTimerCore() {
+      const btn = document.getElementById('btn-timer-ctrl-text');
+      const ring = document.getElementById('timer-circle-ui');
 
-        if (globalState.timer.run) {
-          clearInterval(globalState.timer.threadId); globalState.timer.run = false; btn.innerText = '집중 시작';
-          ring.className = "w-36 h-36 rounded-full border-4 border-emerald-500 flex flex-col items-center justify-center mx-auto shadow-inner bg-slate-50";
-        } else {
-          globalState.timer.run = true; btn.innerText = '몰입 중단';
-          ring.className = "w-36 h-36 rounded-full border-4 border-amber-500 flex flex-col items-center justify-center mx-auto shadow-inner bg-slate-50 animate-pulse";
+      if (globalState.timer.run) {
+        clearInterval(globalState.timer.threadId); globalState.timer.run = false; btn.innerText = '집중 시작';
+        ring.className = "w-36 h-36 rounded-full border-4 border-emerald-500 flex flex-col items-center justify-center mx-auto shadow-inner bg-slate-50";
+      } else {
+        globalState.timer.run = true; btn.innerText = '집중 중단';
+        ring.className = "w-36 h-36 rounded-full border-4 border-amber-500 flex flex-col items-center justify-center mx-auto shadow-inner bg-slate-50 animate-pulse";
 
-          globalState.timer.threadId = setInterval(() => {
-            globalState.timer.leftSeconds--;
-            const mm = Math.floor(globalState.timer.leftSeconds / 60).toString().padStart(2, '0');
-            const ss = (globalState.timer.leftSeconds % 60).toString().padStart(2, '0');
-            document.getElementById('timer-digits').innerText = `${mm}:${ss}`;
+        globalState.timer.threadId = setInterval(() => {
+          globalState.timer.leftSeconds--;
+          const mm = Math.floor(globalState.timer.leftSeconds / 60).toString().padStart(2, '0');
+          const ss = (globalState.timer.leftSeconds % 60).toString().padStart(2, '0');
+          document.getElementById('timer-digits').innerText = `${mm}:${ss}`;
 
-            if(globalState.timer.leftSeconds <= 0) {
-              clearInterval(globalState.timer.threadId); globalState.timer.run = false;
-              if(globalState.timer.mode === 'study') {
-                alert('🎯 완벽한 몰입 세션 통과! 방금 느낀 집중도 스탯을 평가해 보상을 수령하세요.');
-                globalState.avatar.totalTime += 25; globalState.avatar.exp += 40;
-                document.getElementById('evaluation-widget').classList.remove('hidden');
-              } else {
-                alert('휴식이 종료되었습니다. 다시 공부 모드로 전환합니다.');
-                globalState.timer.mode = 'study'; globalState.timer.leftSeconds = 25 * 60;
-                document.getElementById('timer-mode-label').innerText = 'Focus Time';
-              }
-              resetTimerCore(); saveStateToLocalStorage();
+          if(globalState.timer.leftSeconds <= 0) {
+            clearInterval(globalState.timer.threadId); globalState.timer.run = false;
+            if(globalState.timer.mode === 'study') {
+              alert('🎯 집중 세션 완료! 자가 집중 점수를 매겨 보상을 획득하세요.');
+              globalState.avatar.totalTime += 25; globalState.avatar.exp += 40;
+              document.getElementById('evaluation-widget').classList.remove('hidden');
+            } else {
+              globalState.timer.mode = 'study'; globalState.timer.leftSeconds = 25 * 60;
+              document.getElementById('timer-mode-label').innerText = 'Focus Time';
             }
-          }, 1000);
-        }
+            resetTimerCore(); saveStateToLocalStorage();
+          }
+        }, 1000);
       }
+    }
 
-      function resetTimerCore() {
-        clearInterval(globalState.timer.threadId); globalState.timer.run = false;
-        globalState.timer.leftSeconds = globalState.timer.mode === 'study' ? 25 * 60 : 5 * 60;
-        document.getElementById('timer-digits').innerText = globalState.timer.mode === 'study' ? "25:00":"05:00";
-        document.getElementById('btn-timer-ctrl-text').innerText = '집중 시작';
-        document.getElementById('timer-circle-ui').className = "w-36 h-36 rounded-full border-4 border-emerald-500 flex flex-col items-center justify-center mx-auto shadow-inner bg-slate-50";
+    function resetTimerCore() {
+      clearInterval(globalState.timer.threadId); globalState.timer.run = false;
+      globalState.timer.leftSeconds = globalState.timer.mode === 'study' ? 25 * 60 : 5 * 60;
+      document.getElementById('timer-digits').innerText = globalState.timer.mode === 'study' ? "25:00":"05:00";
+      document.getElementById('btn-timer-ctrl-text').innerText = '집중 시작';
+      document.getElementById('timer-circle-ui').className = "w-36 h-36 rounded-full border-4 border-emerald-500 flex flex-col items-center justify-center mx-auto shadow-inner bg-slate-50";
+    }
+
+    function commitEvaluation(score) {
+      globalState.avatar.stats.wp += score;
+      document.getElementById('evaluation-widget').classList.add('hidden');
+      globalState.timer.mode = 'break'; globalState.timer.leftSeconds = 5 * 60;
+      document.getElementById('timer-mode-label').innerText = 'Break Time';
+      resetTimerCore(); syncStateToDashboard(); saveStateToLocalStorage();
+    }
+
+    function toggleNoteForm() { document.getElementById('note-form').classList.toggle('hidden'); }
+
+    function addWrongNote(e) {
+      e.preventDefault();
+      const sub = document.getElementById('form-sub-select').value;
+      const title = document.getElementById('form-title').value.trim();
+      const reason = document.getElementById('form-reason').value.trim();
+
+      globalState.wrongNotes.unshift({ id: Date.now(), subject: sub, title: title, reason: reason });
+      document.getElementById('form-title').value = ''; document.getElementById('form-reason').value = '';
+      toggleNoteForm(); drawNotesUI(); saveStateToLocalStorage();
+    }
+
+    function drawNotesUI() {
+      const box = document.getElementById('notes-list-box'); box.innerHTML = '';
+      if(globalState.wrongNotes.length === 0) {
+        box.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">저장소에 등록된 오답노트가 비어있습니다.</p>`; return;
       }
+      globalState.wrongNotes.forEach(n => {
+        const card = document.createElement('div');
+        card.className = "bg-white border border-slate-100 p-3.5 rounded-xl shadow-sm space-y-1.5";
+        card.innerHTML = `
+          <div class="flex justify-between items-center"><span class="text-[9px] font-extrabold bg-rose-50 text-rose-700 px-1.5 py-0.2 rounded">${n.subject}</span></div>
+          <h4 class="text-xs font-bold text-slate-800">${n.title}</h4>
+          <p class="text-[11px] p-2 bg-slate-50 border rounded-lg text-slate-600"><span class="font-bold text-rose-500">원인 요약:</span> ${n.reason}</p>
+        `;
+        box.appendChild(card);
+      });
+    }
 
-      function commitEvaluation(score) {
-        globalState.avatar.stats.wp += score;
-        document.getElementById('evaluation-widget').classList.add('hidden');
-        globalState.timer.mode = 'break'; globalState.timer.leftSeconds = 5 * 60;
-        document.getElementById('timer-mode-label').innerText = 'Break Time';
-        resetTimerCore(); syncStateToDashboard(); saveStateToLocalStorage();
-      }
+    function drawCharacterRoomUI() {
+      document.getElementById('room-total-hours').innerText = Math.floor(globalState.avatar.totalTime / 60);
+      document.getElementById('room-total-mins').innerText = globalState.avatar.totalTime % 60;
+      document.getElementById('room-avatar-emoji').innerText = globalState.avatar.trait;
 
-      // AI 오답노트 제어 아카이브
-      function toggleNoteForm() { document.getElementById('note-form').classList.toggle('hidden'); }
-
-      function addWrongNote(e) {
-        e.preventDefault();
-        const sub = document.getElementById('form-sub-select').value;
-        const title = document.getElementById('form-title').value.trim();
-        const reason = document.getElementById('form-reason').value.trim();
-
-        globalState.wrongNotes.unshift({ id: Date.now(), subject: sub, title: title, reason: reason });
-        document.getElementById('form-title').value = ''; document.getElementById('form-reason').value = '';
-        toggleNoteForm(); drawNotesUI(); saveStateToLocalStorage();
-      }
-
-      function drawNotesUI() {
-        const box = document.getElementById('notes-list-box'); box.innerHTML = '';
-        if(globalState.wrongNotes.length === 0) {
-          box.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">로컬 저장소에 수집된 오답이 없습니다.</p>`; return;
-        }
-        globalState.wrongNotes.forEach(n => {
-          const card = document.createElement('div');
-          card.className = "bg-white border border-slate-100 p-3.5 rounded-xl shadow-sm space-y-1.5";
-          card.innerHTML = `
-            <div class="flex justify-between items-center"><span class="text-[9px] font-extrabold bg-rose-50 text-rose-700 px-1.5 py-0.2 rounded">${n.subject}</span></div>
-            <h4 class="text-xs font-bold text-slate-800">${n.title}</h4>
-            <p class="text-[11px] p-2 bg-slate-50 border rounded-lg text-slate-600"><span class="font-bold text-rose-500">원인 디버깅:</span> ${n.reason}</p>
-          `;
-          box.appendChild(card);
-        });
-      }
-
-      // 캐릭터 아카이브 렌더러
-      function drawCharacterRoomUI() {
-        document.getElementById('room-total-hours').innerText = Math.floor(globalState.avatar.totalTime / 60);
-        document.getElementById('room-total-mins').innerText = globalState.avatar.totalTime % 60;
-        document.getElementById('room-avatar-emoji').innerText = getAvatarVisualRepresentation(globalState.avatar);
-
-        const grid = document.getElementById('room-inventory-grid'); grid.innerHTML = '';
-        globalState.achievements.forEach(item => {
-          const active = globalState.avatar.totalTime >= item.timeReq;
-          const slot = document.createElement('div');
-          slot.className = `p-3 rounded-xl border flex flex-col items-center text-center ${active ? 'bg-white border-slate-200 shadow-sm':'bg-slate-50 opacity-40'}`;
-          slot.innerHTML = `
-            <span class="text-2xl">${active ? item.icon : '🔒'}</span>
-            <span class="text-[10px] font-bold text-slate-700 mt-1">${item.name}</span>
-            <span class="text-[8px] text-slate-400">${item.timeReq}분 달성</span>
-          `;
-          grid.appendChild(slot);
-        });
-      }
+      const grid = document.getElementById('room-inventory-grid'); grid.innerHTML = '';
+      globalState.achievements.forEach(item => {
+        const active = globalState.avatar.totalTime >= item.timeReq;
+        const slot = document.createElement('div');
+        slot.className = `p-3 rounded-xl border flex flex-col items-center text-center ${active ? 'bg-white border-slate-200 shadow-sm':'bg-slate-50 opacity-40'}`;
+        slot.innerHTML = `
+          <span class="text-2xl">${active ? item.icon : '🔒'}</span>
+          <span class="text-[10px] font-bold text-slate-700 mt-1">${item.name}</span>
+          <span class="text-[8px] text-slate-400">${item.timeReq}분 필요</span>
+        `;
+        grid.appendChild(slot);
+      });
+    }
   </script>
 </body>
 </html>
