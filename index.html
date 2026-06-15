@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Study With AI</title>
+  <title>Study With AI - STDY</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   
@@ -13,7 +13,7 @@
     import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
     // =========================================================
-    // ⚙️ [필수 데이터] 사용자의 Firebase 설정 정보 입력 파트
+    // ⚙️ [필수] 본인의 Firebase 프로젝트 설정 값으로 교체해주세요.
     // =========================================================
     const firebaseConfig = {
       apiKey: "YOUR_API_KEY_HERE",
@@ -24,82 +24,103 @@
       appId: "YOUR_APP_ID_HERE"
     };
 
-    // 앱 및 서비스 이니셜라이즈
+    // Firebase 초기화
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
     const googleProvider = new GoogleAuthProvider();
 
-    // 전역 코어 데이터 모델 인스턴스 (초기 제로 상태)
+    // 글로벌 데이터 상태 관리 구조
     let globalState = {
-      user: { name: '', mainGoal: '', subGoal: '', ddayStr: '', tier: '중급', limitMinutes: 60, email: '' },
+      user: { name: '', email: '', mainGoal: '', subGoal: '', ddayStr: '', tier: '중급', limitMinutes: 60 },
       avatar: { level: 1, exp: 0, maxExp: 100, streak: 1, totalTime: 0, gender: 'female', trait: '🎒', status: 'active', stats: { hp: 100, fp: 30, wp: 10, kp: 0 } },
       todoList: [],
       wrongNotes: [],
       timer: { mode: 'study', run: false, leftSeconds: 25 * 60, threadId: null },
       achievements: [
-        { id: 'item1', name: '집중 몰입 헤드폰', icon: '🎧', timeReq: 25, active: false },
-        { id: 'item2', name: '비밀 오답 노트', icon: '📓', timeReq: 60, active: false },
-        { id: 'item3', name: 'AI 연동 스마트워치', icon: '⌚', timeReq: 120, active: false },
-        { id: 'item4', name: '풀스택 개발 태블릿', icon: '💻', timeReq: 240, active: false }
+        { id: 'item1', name: '집중 몰입 헤드폰', icon: '🎧', timeReq: 25 },
+        { id: 'item2', name: '비밀 오답 노트', icon: '📓', timeReq: 60 },
+        { id: 'item3', name: 'AI 스마트워치', icon: '⌚', timeReq: 120 },
+        { id: 'item4', name: '개발용 태블릿', icon: '💻', timeReq: 240 }
       ]
     };
 
-    // 외부 스크립트 연결 바인딩 인터페이스 생성
-    window.fbAuth = auth;
-    window.fbDb = db;
-    window.googleProvider = googleProvider;
-    window.globalState = globalState;
+    // 전역 윈도우 바인딩 (인라인 액션 호출용)
+    window.fbAuth = auth; window.fbDb = db; window.googleProvider = googleProvider; window.globalState = globalState;
     window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
     window.signInWithEmailAndPassword = signInWithEmailAndPassword;
-    window.signInWithPopup = signInWithPopup;
-    window.signOut = signOut;
-    window.doc = doc;
-    window.getDoc = getDoc;
-    window.setDoc = setDoc;
-    window.updateDoc = updateDoc;
+    window.signInWithPopup = signInWithPopup; window.signOut = signOut;
+    window.doc = doc; window.getDoc = getDoc; window.setDoc = setDoc; window.updateDoc = updateDoc;
   </script>
 
   <style>
     body { -webkit-tap-highlight-color: transparent; }
     .screen { display: none; }
-    .screen.active { display: block; animation: fadeIn 0.25s ease-out forwards; }
+    .screen.active { display: flex; animation: fadeIn 0.25s ease-out forwards; }
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
+      from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    .tabular-nums { font-variant-numeric: tabular-nums; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<body class="bg-slate-100 flex justify-center text-slate-800 antialiased font-sans selection:bg-emerald-200">
+<body class="bg-slate-100 flex justify-center text-slate-800 antialiased font-sans">
 
   <div class="w-full max-w-md bg-white min-h-screen shadow-2xl relative flex flex-col border-x border-slate-200">
     
-    <header id="app-header" class="hidden px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-40">
+    <header id="app-header" class="hidden px-5 py-4 border-b border-slate-100 justify-between items-center bg-white sticky top-0 z-40">
       <div class="flex items-center gap-2">
         <span class="text-xl">🌱</span>
         <h1 class="font-bold text-lg tracking-tight bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">Study With AI</h1>
       </div>
-      <div class="flex items-center gap-2">
-        <div id="header-dday" class="bg-emerald-50 text-emerald-700 text-[11px] px-2.5 py-1 rounded-full font-bold">D-Day 계산중</div>
-        <button onclick="requestLogout()" class="text-slate-400 hover:text-rose-500 text-xs p-1"><i data-lucide="log-out" class="w-4 h-4"></i></button>
+      <div class="flex items-center gap-3">
+        <div id="header-dday" class="bg-emerald-50 text-emerald-700 text-[11px] px-2.5 py-1 rounded-full font-bold">D-Day</div>
+        <button onclick="requestLogout()" class="text-slate-400 hover:text-rose-500 transition p-1">
+          <i data-lucide="log-out" class="w-4 h-4"></i>
+        </button>
       </div>
     </header>
 
-    <main class="flex-1 p-5 overflow-y-auto pb-24">
+    <main class="flex-1 overflow-y-auto no-scrollbar flex flex-col p-5 pb-24">
 
-      <section id="screen-loading" class="screen active text-center pt-32 space-y-4">
-        <div class="inline-block w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-        <p class="text-xs text-slate-400 font-medium">인증 자격 증명 및 클라우드 동기화 확인 중...</p>
+      <section id="screen-gate-loading" class="screen active flex-col items-center justify-center pt-48 space-y-4">
+        <div class="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+        <p class="text-xs text-slate-400 font-medium">보안 세션 및 클라우드 동기화 확인 중...</p>
       </section>
 
-      <section id="screen-auth" class="screen space-y-6 pt-6">
-        <div class="text-center space-y-2">
-          <div class="inline-flex p-3 bg-emerald-50 rounded-2xl text-4xl">🌱</div>
-          <h2 class="text-2xl font-black">공부 RPG 계정 생성</h2>
-          <p class="text-xs text-slate-400">데이터 영구 저장을 위해 소셜 또는 이메일로 가입하세요.</p>
+      <section id="screen-welcome" class="screen flex-col justify-between min-h-[78vh] text-center">
+        <div class="my-auto space-y-6">
+          <div class="inline-flex p-4 bg-emerald-50 rounded-3xl text-5xl shadow-sm animate-bounce">🌱</div>
+          <div class="space-y-2">
+            <h2 class="text-3xl font-black text-slate-950 tracking-tight">Study With AI</h2>
+            <p class="text-emerald-600 font-extrabold text-xs tracking-wider uppercase">스티(STDY)와 함께하는 공부 RPG</p>
+          </div>
+          
+          <div class="bg-slate-50 border border-slate-100 rounded-2xl p-4 text-left space-y-3 max-w-xs mx-auto">
+            <div class="flex gap-2.5 items-start">
+              <span class="text-sm">🤖</span>
+              <div>
+                <h4 class="text-xs font-bold text-slate-800">인공지능 코치 스티(STDY) 소개</h4>
+                <p class="text-[11px] text-slate-400 leading-normal mt-0.5">목표 스케줄과 인지 역량을 학습하여 맞춤형 일일 계획표를 생성하고, 몰입 피드백에 따라 스탯 버프를 연산하는 지능형 메이트입니다.</p>
+              </div>
+            </div>
+            <div class="flex gap-2.5 items-start border-t border-slate-200/60 pt-2.5">
+              <span class="text-sm">🔒</span>
+              <p class="text-[11px] text-slate-400 leading-normal">시작하기 버튼을 눌러 안전한 클라우드 계정을 연동하면 나만의 전용 학습 관리 시스템이 개설됩니다.</p>
+            </div>
+          </div>
+        </div>
+
+        <button onclick="goToView('#screen-auth')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl shadow-md text-sm transition mt-6">
+          시작하기
+        </button>
+      </section>
+
+      <section id="screen-auth" class="screen flex-col space-y-5 pt-4">
+        <div class="text-center space-y-1.5">
+          <h2 class="text-2xl font-black text-slate-900">클라우드 계정 생성</h2>
+          <p class="text-xs text-slate-400">데이터 영구 저장과 실시간 동기화를 위해 가입해 주세요.</p>
         </div>
 
         <div class="grid grid-cols-2 gap-1 bg-slate-100 p-1 rounded-xl text-xs font-bold">
@@ -107,18 +128,18 @@
           <button id="tab-btn-join" onclick="switchAuthTab('join')" class="p-2.5 rounded-lg text-slate-400">회원가입</button>
         </div>
 
-        <div class="space-y-3 pt-2">
+        <div class="space-y-2.5 pt-1">
           <input type="email" id="auth-email" placeholder="이메일 주소 (example@domain.com)" class="w-full p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:border-emerald-500 focus:bg-white transition">
-          <input type="password" id="auth-password" placeholder="비밀번호 (6자리 이상 보증)" class="w-full p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:border-emerald-500 focus:bg-white transition">
+          <input type="password" id="auth-password" placeholder="비밀번호 (6자리 이상 입력)" class="w-full p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:border-emerald-500 focus:bg-white transition">
         </div>
 
-        <div class="space-y-2.5">
+        <div class="space-y-2">
           <button id="main-auth-submit-btn" onclick="handleEmailAuthAction()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl text-xs transition">
-            이메일 계정으로 진행
+            이메일 로그인 진행
           </button>
           <div class="relative flex py-2 items-center">
             <div class="flex-grow border-t border-slate-100"></div>
-            <span class="flex-shrink mx-4 text-[10px] text-slate-400 font-semibold tracking-wider uppercase">또는 간편 연동</span>
+            <span class="mx-3 text-[10px] text-slate-400 font-bold uppercase tracking-wider">또는 간편 연동</span>
             <div class="flex-grow border-t border-slate-100"></div>
           </div>
           <button onclick="handleGoogleLogin()" class="w-full bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-bold py-3.5 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-sm">
@@ -128,108 +149,79 @@
         </div>
       </section>
 
-      <section id="step-1" class="screen flex flex-col justify-between min-h-[72vh] text-center">
-        <div class="space-y-5 my-auto">
-          <div class="inline-flex p-4 bg-emerald-50 rounded-3xl text-5xl shadow-sm animate-bounce">🌱</div>
-          <div class="space-y-1">
-            <h2 class="text-2xl font-black text-slate-900">새로운 여정의 시작</h2>
-            <p class="text-emerald-600 font-extrabold text-xs tracking-wider uppercase">Study With AI 신규 등록방</p>
-          </div>
-          
-          <div class="bg-slate-50 border border-slate-100 rounded-2xl p-4 text-left space-y-3 max-w-xs mx-auto">
-            <div class="flex gap-2.5 items-start">
-              <span class="text-sm">🤖</span>
-              <div>
-                <h4 class="text-xs font-bold text-slate-800">인공지능 코치 스티(STDY) 소개</h4>
-                <p class="text-[11px] text-slate-400 leading-normal mt-0.5">사용자가 정한 마일스톤에 입각해 일일 계획표를 알아서 조직하며, 피드백 점수에 따라 학습 한계치 스탯 버프를 연산하는 지능형 에이전트입니다.</p>
-              </div>
-            </div>
-            <div class="flex gap-2.5 items-start border-t border-slate-200/60 pt-2.5">
-              <span class="text-sm">🔒</span>
-              <p class="text-[11px] text-slate-400 leading-normal">현재 어떠한 집중 분야, 타이머 구동 시계, 기존 공부 진척도 기록도 존재하지 않는 클린 상태입니다. 온보딩 설계를 끝마치면 Lv.1 캐릭터 계정이 활성화됩니다.</p>
-            </div>
-          </div>
-        </div>
-
-        <button onclick="goToStep(2)" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl shadow-md text-xs transition mt-6">
-          신규 맞춤 세팅 설정 시작하기
-        </button>
-      </section>
-
-      <section id="step-2" class="screen space-y-6">
+      <section id="ob-step-1" class="screen flex-col space-y-5">
         <div class="flex justify-between items-center">
-          <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md uppercase">STEP 01</span>
-          <button onclick="goBackToStep(1)" class="text-xs text-slate-400 flex items-center gap-1 hover:text-slate-600"><i data-lucide="chevron-left" class="w-4 h-4"></i> 뒤로가기</button>
+          <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">STEP 01</span>
+          <button onclick="requestLogout()" class="text-xs text-slate-400 flex items-center gap-1 hover:text-rose-500"><i data-lucide="log-out" class="w-3.5 h-3.5"></i> 처음으로</button>
         </div>
         <div class="space-y-1">
           <h3 class="text-lg font-black">사용할 이름을 입력해 주세요</h3>
-          <p class="text-xs text-slate-400">앱 내에서 플레이어 캐릭터를 호칭할 닉네임이 됩니다.</p>
+          <p class="text-xs text-slate-400">앱 내에서 플레이어 캐릭터를 부르는 이름이 됩니다.</p>
         </div>
         <div class="space-y-1.5 pt-2">
-          <label class="text-[11px] font-bold text-slate-400 block">이름 / 닉네임</label>
-          <input type="text" id="reg-username" placeholder="이름을 기입하세요" class="w-full p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:border-emerald-500 focus:bg-white transition">
+          <input type="text" id="reg-username" placeholder="이름 또는 닉네임을 입력하세요" class="w-full p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:border-emerald-500 focus:bg-white transition">
         </div>
-        <button onclick="submitStep2()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl text-xs transition shadow-sm">
+        <button onclick="submitObStep1()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl text-xs transition shadow-sm">
           다음 단계로 이동
         </button>
       </section>
 
-      <section id="step-3" class="screen space-y-6">
+      <section id="ob-step-2" class="screen flex-col space-y-5">
         <div class="flex justify-between items-center">
-          <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md uppercase">STEP 02</span>
-          <button onclick="goBackToStep(2)" class="text-xs text-slate-400 flex items-center gap-1 hover:text-slate-600"><i data-lucide="chevron-left" class="w-4 h-4"></i> 뒤로가기</button>
+          <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">STEP 02</span>
+          <button onclick="goBackObStep(1)" class="text-xs text-slate-400 flex items-center gap-0.5 hover:text-slate-600"><i data-lucide="chevron-left" class="w-4 h-4"></i> 뒤로가기</button>
         </div>
         <div class="space-y-1">
-          <h3 class="text-lg font-black">공부할 메인 도메인 선택</h3>
-          <p class="text-xs text-slate-400">현재 가장 집중하고 싶은 학습의 카테고리를 설정합니다.</p>
+          <h3 class="text-lg font-black">공부하는 대분류 목적을 선택하세요</h3>
+          <p class="text-xs text-slate-400">가장 집중하고 싶은 학업/목표의 대상을 지정합니다.</p>
         </div>
-        <div class="grid grid-cols-1 gap-2" id="goal-options-box">
+        <div class="grid grid-cols-1 gap-2" id="main-goal-options-box">
           </div>
-        <button onclick="submitStep3()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl text-xs transition shadow-sm">
+        <button onclick="submitObStep2()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl text-xs transition shadow-sm">
           다음 단계로 이동
         </button>
       </section>
 
-      <section id="step-4" class="screen space-y-6">
+      <section id="ob-step-3" class="screen flex-col space-y-5">
         <div class="flex justify-between items-center">
-          <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md uppercase">STEP 03</span>
-          <button onclick="goBackToStep(3)" class="text-xs text-slate-400 flex items-center gap-1 hover:text-slate-600"><i data-lucide="chevron-left" class="w-4 h-4"></i> 뒤로가기</button>
+          <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">STEP 03</span>
+          <button onclick="goBackObStep(2)" class="text-xs text-slate-400 flex items-center gap-0.5 hover:text-slate-600"><i data-lucide="chevron-left" class="w-4 h-4"></i> 뒤로가기</button>
         </div>
         <div class="space-y-1">
-          <h3 class="text-lg font-black">세부 목표 목표 과목 지정</h3>
-          <p class="text-xs text-slate-400">선택한 분류 안에서 AI 스티가 집중 스케줄을 배정할 과목입니다.</p>
+          <h3 class="text-lg font-black">세부 공부 과목/분야 지정</h3>
+          <p class="text-xs text-slate-400">AI 스티가 핵심 플래너 일정을 생성해 줄 상세 카테고리입니다.</p>
         </div>
-        <div class="space-y-2" id="sub-category-list-container">
+        <div class="space-y-2" id="sub-goal-options-box">
           </div>
-        <button onclick="submitStep4()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl text-xs transition shadow-sm">
-          상세 조율 단계로 이동
+        <button onclick="submitObStep3()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl text-xs transition shadow-sm">
+          다음 단계로 이동
         </button>
       </section>
 
-      <section id="step-5" class="screen space-y-6">
+      <section id="ob-step-4" class="screen flex-col space-y-5">
         <div class="flex justify-between items-center">
-          <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md uppercase">STEP 04</span>
-          <button onclick="goBackToStep(4)" class="text-xs text-slate-400 flex items-center gap-1 hover:text-slate-600"><i data-lucide="chevron-left" class="w-4 h-4"></i> 뒤로가기</button>
+          <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">STEP 04</span>
+          <button onclick="goBackObStep(3)" class="text-xs text-slate-400 flex items-center gap-0.5 hover:text-slate-600"><i data-lucide="chevron-left" class="w-4 h-4"></i> 뒤로가기</button>
         </div>
         <div class="space-y-1">
-          <h3 class="text-lg font-black">목표 마감일 및 강도 조절</h3>
-          <p class="text-xs text-slate-400">디데이 일정 산출을 위한 타이머 베이스 설정입니다.</p>
+          <h3 class="text-lg font-black">시험 날짜 및 목표 강도 조절</h3>
+          <p class="text-xs text-slate-400">디데이 계산과 하루 학습 한계치 연산을 유도하는 설정입니다.</p>
         </div>
         <div class="space-y-4">
-          <div class="space-y-1.5">
-            <label class="text-[11px] font-bold text-slate-400 block">최종 데드라인 지정 (D-Day)</label>
+          <div class="space-y-1">
+            <label class="text-[11px] font-bold text-slate-400 block">시험 마감일 지정 (D-Day)</label>
             <input type="date" id="reg-target-date" class="w-full p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:border-emerald-500 focus:bg-white transition">
           </div>
-          <div class="space-y-1.5">
-            <label class="text-[11px] font-bold text-slate-400 block">현재 본인의 훈련 숙련도 체감</label>
+          <div class="space-y-1">
+            <label class="text-[11px] font-bold text-slate-400 block">현재 체감 숙련도</label>
             <div class="grid grid-cols-3 gap-2">
               <button onclick="selectTier('초급', this)" class="tier-btn p-3 text-xs font-bold bg-slate-50 border border-slate-200 rounded-xl text-center">🌱 초급</button>
               <button onclick="selectTier('중급', this)" class="tier-btn p-3 text-xs font-bold bg-emerald-50 border-2 border-emerald-500 text-emerald-700 rounded-xl text-center">🌿 중급</button>
               <button onclick="selectTier('고급', this)" class="tier-btn p-3 text-xs font-bold bg-slate-50 border border-slate-200 rounded-xl text-center">🌲 고급</button>
             </div>
           </div>
-          <div class="space-y-1.5">
-            <label class="text-[11px] font-bold text-slate-400 block">하루 권장 공부 시간</label>
+          <div class="space-y-1">
+            <label class="text-[11px] font-bold text-slate-400 block">하루 권장 공부 목표 시간</label>
             <select id="reg-daily-time" class="w-full p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:border-emerald-500 focus:bg-white transition">
               <option value="30">30분</option>
               <option value="60" selected>1시간</option>
@@ -238,72 +230,87 @@
             </select>
           </div>
         </div>
-        <button onclick="goToStep(6)" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl text-xs transition shadow-sm">
-          아바타 외형 제작으로 이동
+        <button onclick="goToObStep(5)" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl text-xs transition shadow-sm">
+          다음 단계로 이동
         </button>
       </section>
 
-      <section id="step-6" class="screen space-y-5">
+      <section id="ob-step-5" class="screen flex-col space-y-5">
         <div class="flex justify-between items-center">
-          <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md uppercase">LAST STEP</span>
-          <button onclick="goBackToStep(5)" class="text-xs text-slate-400 flex items-center gap-1 hover:text-slate-600"><i data-lucide="chevron-left" class="w-4 h-4"></i> 뒤로가기</button>
+          <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">STEP 05</span>
+          <button onclick="goBackObStep(4)" class="text-xs text-slate-400 flex items-center gap-0.5 hover:text-slate-600"><i data-lucide="chevron-left" class="w-4 h-4"></i> 뒤로가기</button>
         </div>
         <div class="space-y-1">
-          <h3 class="text-lg font-black">나만의 RPG 아바타 외형 지정</h3>
-          <p class="text-xs text-slate-400">레벨 성장 조건 진척에 맞춰 외관 기어 장비가 자동 진화 업그레이드됩니다.</p>
+          <h3 class="text-lg font-black">나만의 RPG 아바타 설정</h3>
+          <p class="text-xs text-slate-400">성장도에 맞춰 헤어 기어 장비와 등급 타이틀이 강화됩니다.</p>
         </div>
 
-        <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl p-5 border border-slate-200 text-center space-y-1.5 shadow-inner">
+        <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl p-5 border border-slate-200 text-center space-y-1 shadow-inner">
           <div id="preview-avatar-emoji" class="text-5xl py-2 tracking-tight select-none">👧🏻🎒</div>
-          <div id="preview-avatar-desc" class="text-[10px] text-emerald-700 font-extrabold bg-emerald-50 px-3 py-0.5 rounded-full inline-block">여성 아바타 로딩</div>
+          <div id="preview-avatar-desc" class="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-3 py-0.5 rounded-full inline-block">여성 사양 로딩</div>
         </div>
 
-        <div class="space-y-3 max-h-56 overflow-y-auto pr-1 no-scrollbar">
+        <div class="space-y-3">
           <div class="space-y-1">
-            <label class="text-[11px] font-bold text-slate-400 block">성별 베이스 결정</label>
+            <label class="text-[11px] font-bold text-slate-400 block">성별 성향 선택</label>
             <div class="grid grid-cols-2 gap-2">
               <button onclick="setGender('male')" id="gender-m" class="p-2.5 text-xs font-bold bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-center gap-1.5">👨 남성</button>
               <button onclick="setGender('female')" id="gender-f" class="p-2.5 text-xs font-bold bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-center gap-1.5">👩 여성</button>
             </div>
           </div>
           <div class="space-y-1">
-            <label class="text-[11px] font-bold text-slate-400 block">헤어 슬롯 스타일</label>
+            <label class="text-[11px] font-bold text-slate-400 block">스타일 피팅</label>
             <div id="hair-slots-container" class="grid grid-cols-2 gap-2"></div>
           </div>
         </div>
 
-        <button onclick="finalizeOnboardingAndUploadCloud()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 rounded-xl text-xs shadow-lg transition">
-          계약 승인 및 Lv.1 공부방 개설 🚀
+        <button onclick="goToObStep(6)" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl text-xs transition shadow-sm">
+          AI 공부 계획 매핑하기
         </button>
       </section>
 
-      <section id="screen-home" class="screen space-y-4">
-        <div class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl p-4 border border-emerald-100 flex items-start gap-3 shadow-sm relative overflow-hidden">
-          <div class="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center text-xl shadow-md shrink-0 animate-bounce">🌱</div>
+      <section id="ob-step-6" class="screen flex-col items-center justify-center pt-20 text-center space-y-6">
+        <div class="w-16 h-16 rounded-2xl bg-slate-900 text-white flex items-center justify-center text-3xl animate-bounce shadow-md">🤖</div>
+        <div class="space-y-1.5">
+          <h3 class="text-lg font-black">AI 스티가 맞춤 공부 스케줄을 짜고 있습니다</h3>
+          <p class="text-xs text-slate-400 max-w-xs leading-relaxed">선택하신 도메인과 디데이를 역산하여 매일 수행해야 할 Lv.1 전용 에센셜 미션 트랙을 조립하는 중입니다.</p>
+        </div>
+        <div class="w-full max-w-xs bg-slate-100 h-2 rounded-full overflow-hidden">
+          <div class="bg-emerald-500 h-full w-full origin-left scale-x-0 animate-[progress_2s_ease-in-out_forwards]"></div>
+        </div>
+        <button onclick="finalizeOnboardingAndUploadCloud()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 rounded-xl text-xs shadow-lg transition">
+          승인 및 Lv.1 개인 홈 진입 🚀
+        </button>
+        <style>
+          @keyframes progress { to { transform: scaleX(1); } }
+        </style>
+      </section>
+
+      <section id="screen-home" class="screen flex-col space-y-4">
+        <div class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl p-4 border border-emerald-100 flex items-start gap-3 shadow-sm">
+          <div class="w-9 h-9 rounded-xl bg-emerald-500 flex items-center justify-center text-lg shadow-md shrink-0">🤖</div>
           <div class="space-y-0.5">
-            <h4 class="text-xs font-bold text-emerald-900 flex items-center gap-1.5">
-              AI 코치 스티(STDY) <span class="text-[8px] bg-emerald-600 text-white px-1.5 py-0.2 rounded font-normal">엔진 가동</span>
-            </h4>
-            <p id="sti-dynamic-speech" class="text-xs text-slate-600 leading-relaxed font-medium">분석 가동 중...</p>
+            <h4 class="text-xs font-bold text-emerald-900 flex items-center gap-1.5">AI 코치 스티(STDY) <span class="text-[8px] bg-emerald-600 text-white px-1 py-0.2 rounded">동기화 완료</span></h4>
+            <p id="sti-dynamic-speech" class="text-xs text-slate-600 leading-relaxed font-medium">로딩 중...</p>
           </div>
         </div>
 
         <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm space-y-4">
           <div class="flex items-center justify-between">
-            <div class="space-y-0.5">
-              <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">HERO STATUS</span>
-              <h3 class="text-lg font-extrabold tracking-tight">Lv. <span id="dash-level">1</span> <span id="dash-username">플레이어</span></h3>
+            <div>
+              <span class="text-[9px] font-bold text-emerald-600 tracking-wider">HERO STATUS</span>
+              <h3 class="text-lg font-black">Lv. <span id="dash-level">1</span> <span id="dash-username">플레이어</span></h3>
             </div>
             <div class="flex items-center gap-1 text-amber-500 font-bold bg-amber-50 px-2.5 py-1 rounded-full text-xs">
               <i data-lucide="flame" class="w-3.5 h-3.5 fill-current"></i> <span id="dash-streak">1</span>일째
             </div>
           </div>
 
-          <div class="flex flex-col items-center justify-center py-5 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+          <div class="flex flex-col items-center justify-center py-4 bg-slate-50 rounded-xl border border-dashed border-slate-200">
             <span id="dash-avatar-emoji" class="text-5xl select-none">👧🏻</span>
-            <p id="dash-avatar-title" class="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2.5 py-0.5 rounded-full mt-2">레벨 연산 중</p>
-            <div class="w-full px-4 mt-4 space-y-1">
-              <div class="flex justify-between text-[9px] text-slate-500 font-semibold">
+            <p id="dash-avatar-title" class="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2.5 py-0.5 rounded-full mt-2">레벨 1 모험가</p>
+            <div class="w-full px-4 mt-3 space-y-1">
+              <div class="flex justify-between text-[9px] text-slate-400 font-bold">
                 <span>EXP <span id="dash-exp-text">0</span> / 100</span>
                 <span><span id="dash-exp-pct">0</span>%</span>
               </div>
@@ -315,19 +322,19 @@
 
           <div class="grid grid-cols-2 gap-2">
             <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100 flex items-center justify-between">
-              <div class="flex items-center gap-1.5 text-xs text-slate-400 font-medium"><i data-lucide="heart" class="w-3.5 h-3.5 text-rose-500"></i> <span class="text-slate-500">체력</span></div>
+              <span class="text-xs text-slate-500 flex items-center gap-1"><i data-lucide="heart" class="w-3.5 h-3.5 text-rose-500"></i> 체력</span>
               <span id="stat-hp" class="text-xs font-bold text-slate-700">100 / 100</span>
             </div>
             <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100 flex items-center justify-between">
-              <div class="flex items-center gap-1.5 text-xs text-slate-400 font-medium"><i data-lucide="zap" class="w-3.5 h-3.5 text-amber-500"></i> <span class="text-slate-500">집중력</span></div>
+              <span class="text-xs text-slate-500 flex items-center gap-1"><i data-lucide="zap" class="w-3.5 h-3.5 text-amber-500"></i> 집중력</span>
               <span id="stat-fp" class="text-xs font-bold text-slate-700">30분</span>
             </div>
             <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100 flex items-center justify-between">
-              <div class="flex items-center gap-1.5 text-xs text-slate-400 font-medium"><i data-lucide="award" class="w-3.5 h-3.5 text-blue-500"></i> <span class="text-slate-500">의지</span></div>
+              <span class="text-xs text-slate-500 flex items-center gap-1"><i data-lucide="award" class="w-3.5 h-3.5 text-blue-500"></i> 의지</span>
               <span id="stat-wp" class="text-xs font-bold text-slate-700">10</span>
             </div>
             <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100 flex items-center justify-between">
-              <div class="flex items-center gap-1.5 text-xs text-slate-400 font-medium"><i data-lucide="book-open" class="w-3.5 h-3.5 text-purple-500"></i> <span class="text-slate-500">지식</span></div>
+              <span class="text-xs text-slate-500 flex items-center gap-1"><i data-lucide="book-open" class="w-3.5 h-3.5 text-purple-500"></i> 지식</span>
               <span id="stat-kp" class="text-xs font-bold text-slate-700">0</span>
             </div>
           </div>
@@ -335,106 +342,102 @@
 
         <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm flex items-center justify-between">
           <div class="space-y-0.5">
-            <h4 class="text-xs font-bold text-slate-800">오늘의 퀘스트 이행 완료율</h4>
-            <p id="dash-todo-summary" class="text-[11px] text-slate-400">0개 로드됨</p>
+            <h4 class="text-xs font-bold text-slate-800">오늘의 스케줄 완료율</h4>
+            <p id="dash-todo-summary" class="text-[11px] text-slate-400">0개 완료됨</p>
           </div>
-          <div id="dash-todo-pct-circle" class="w-11 h-11 flex items-center justify-center rounded-full bg-emerald-50 text-emerald-700 font-black text-xs border border-emerald-300">
-            0%
-          </div>
+          <div id="dash-todo-pct-circle" class="w-11 h-11 flex items-center justify-center rounded-full bg-emerald-50 text-emerald-700 font-black text-xs border border-emerald-200">0%</div>
         </div>
       </section>
 
-      <section id="screen-planner" class="screen space-y-4">
+      <section id="screen-planner" class="screen flex-col space-y-3">
         <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
-          <h3 class="text-xs font-extrabold mb-0.5">AI 배정 오늘의 일일 훈련 계획</h3>
-          <p class="text-[10px] text-slate-400">설정 도메인 기반으로 매일 자정 인지 지식 트랙킹에 맞춰 조정 생성됩니다.</p>
+          <h3 class="text-xs font-black mb-0.5">AI 배정 오늘의 일일 루틴</h3>
+          <p class="text-[10px] text-slate-400">선택한 공부 도메인을 분석하여 스티가 실시간 발급한 미션 리스트입니다.</p>
         </div>
         <div id="planner-list-box" class="space-y-2"></div>
       </section>
 
-      <section id="screen-timer" class="screen">
+      <section id="screen-timer" class="screen flex-col space-y-4">
         <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm text-center space-y-5">
           <div>
-            <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full uppercase tracking-wider">POMODORO AGENT</span>
-            <h3 class="text-xs font-bold pt-4 text-slate-400">현재 집중 학습 연마 대상: <span id="timer-target-sub-text" class="text-emerald-700 font-extrabold">-</span></h3>
+            <span class="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full uppercase tracking-wider">POMODORO AGENT</span>
+            <h3 class="text-xs font-bold pt-4 text-slate-400">현재 집중 타겟 과목: <span id="timer-target-sub-text" class="text-emerald-700 font-black">-</span></h3>
           </div>
 
-          <div class="w-40 h-40 rounded-full border-[5px] border-emerald-500 flex flex-col items-center justify-center mx-auto shadow-inner bg-slate-50" id="timer-circle-ui">
-            <span id="timer-digits" class="text-3xl font-black text-slate-800 tabular-nums">25:00</span>
+          <div class="w-36 h-36 rounded-full border-4 border-emerald-500 flex flex-col items-center justify-center mx-auto shadow-inner bg-slate-50" id="timer-circle-ui">
+            <span id="timer-digits" class="text-3xl font-black text-slate-800 tracking-tight">25:00</span>
             <span id="timer-mode-label" class="text-[8px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Focus Time</span>
           </div>
 
           <div class="flex justify-center gap-2">
-            <button id="btn-timer-ctrl" onclick="toggleTimerCore()" class="flex items-center gap-1 px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md rounded-xl">
+            <button id="btn-timer-ctrl" onclick="toggleTimerCore()" class="flex items-center gap-1 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md rounded-xl transition">
               <i data-lucide="play" class="w-3.5 h-3.5"></i> <span id="btn-timer-ctrl-text">집중 시작</span>
             </button>
-            <button onclick="resetTimerCore()" class="p-2 rounded-xl border border-slate-200 text-slate-400 hover:bg-slate-50">
+            <button onclick="resetTimerCore()" class="p-2.5 rounded-xl border border-slate-200 text-slate-400 hover:bg-slate-50 transition">
               <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
             </button>
           </div>
 
-          <div id="evaluation-widget" class="hidden pt-4 border-t border-dashed border-slate-200 space-y-2.5">
-            <label class="text-[11px] font-bold text-slate-600 block">방금 세션의 스스로 내리는 몰입도 수준</label>
+          <div id="evaluation-widget" class="hidden pt-4 border-t border-dashed border-slate-200 space-y-2">
+            <label class="text-[11px] font-bold text-slate-500 block">방금 세션의 본인 몰입 강도를 기록해 주세요 (의지 스탯 반영)</label>
             <div class="flex justify-center gap-1">
-              <button onclick="commitEvaluation(1)" class="w-8 h-8 rounded-lg bg-slate-100 font-bold text-xs hover:bg-amber-100">1</button>
-              <button onclick="commitEvaluation(2)" class="w-8 h-8 rounded-lg bg-slate-100 font-bold text-xs hover:bg-amber-100">2</button>
-              <button onclick="commitEvaluation(3)" class="w-8 h-8 rounded-lg bg-slate-100 font-bold text-xs hover:bg-amber-100">3</button>
-              <button onclick="commitEvaluation(4)" class="w-8 h-8 rounded-lg bg-slate-100 font-bold text-xs hover:bg-amber-100">4</button>
-              <button onclick="commitEvaluation(5)" class="w-8 h-8 rounded-lg bg-emerald-600 text-white font-bold text-xs">5</button>
+              <button onclick="commitEvaluation(1)" class="w-8 h-8 rounded-lg bg-slate-100 font-bold text-xs hover:bg-emerald-50">1</button>
+              <button onclick="commitEvaluation(2)" class="w-8 h-8 rounded-lg bg-slate-100 font-bold text-xs hover:bg-emerald-50">2</button>
+              <button onclick="commitEvaluation(3)" class="w-8 h-8 rounded-lg bg-slate-100 font-bold text-xs hover:bg-emerald-50">3</button>
+              <button onclick="commitEvaluation(4)" class="w-8 h-8 rounded-lg bg-slate-100 font-bold text-xs hover:bg-emerald-50">4</button>
+              <button onclick="commitEvaluation(5)" class="w-8 h-8 rounded-lg bg-slate-900 text-white font-bold text-xs">5</button>
             </div>
           </div>
         </div>
       </section>
 
-      <section id="screen-notes" class="screen space-y-4">
+      <section id="screen-notes" class="screen flex-col space-y-3">
         <div class="flex justify-between items-center">
           <div>
-            <h3 class="text-xs font-bold">망각 곡선 연동형 오답 관리</h3>
-            <p class="text-[10px] text-slate-400">오개념 원인 분석 누적 아카이브</p>
+            <h3 class="text-xs font-black">AI 추적 오답 리포트</h3>
+            <p class="text-[10px] text-slate-400">망각 곡선 파괴 및 오개념 원인 추적 디버깅 아카이브</p>
           </div>
           <button onclick="toggleNoteForm()" class="bg-emerald-600 text-white text-[10px] px-2.5 py-1.5 rounded-xl flex items-center gap-1 font-bold">
-            <i data-lucide="plus" class="w-3 h-3"></i> 등록
+            <i data-lucide="plus" class="w-3 h-3"></i> 오답 추가
           </button>
         </div>
 
-        <form id="note-form" onsubmit="addWrongNote(event)" class="hidden bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2.5">
+        <form id="note-form" onsubmit="addWrongNote(event)" class="hidden bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-2.5">
           <div>
-            <label class="text-[10px] font-bold text-slate-400 block mb-0.5">과목 선택</label>
-            <select id="form-sub-select" class="w-full text-xs p-2 rounded-lg bg-white border border-slate-200"></select>
+            <label class="text-[10px] font-bold text-slate-400 block mb-0.5">대응 과목 분류</label>
+            <select id="form-sub-select" class="w-full text-xs p-2 rounded-lg bg-white border border-slate-200 focus:outline-none"></select>
           </div>
           <div>
-            <label class="text-[10px] font-bold text-slate-400 block mb-0.5">틀린 문항 내용</label>
-            <input type="text" id="form-title" required placeholder="예: 단상 변압기 병렬 운전 조건 위배 사항" class="w-full text-xs p-2 rounded-lg bg-white border border-slate-200">
+            <label class="text-[10px] font-bold text-slate-400 block mb-0.5">틀린 문제 요약</label>
+            <input type="text" id="form-title" required placeholder="예: 단상 변압기 병렬 운전 조건 위배" class="w-full text-xs p-2 rounded-lg bg-white border border-slate-200 focus:outline-none">
           </div>
           <div>
-            <label class="text-[10px] font-bold text-slate-400 block mb-0.5">자가 원인 분석 기술</label>
-            <input type="text" id="form-reason" required placeholder="예: 극성이 다르면 순환 전류가 흐른다는 축 정리를 망각함" class="w-full text-xs p-2 rounded-lg bg-white border border-slate-200">
+            <label class="text-[10px] font-bold text-slate-400 block mb-0.5">자가 원인 정밀 분석</label>
+            <input type="text" id="form-reason" required placeholder="예: 극성이 다르면 내부에 대순환 전류가 흐른다는 점 간과" class="w-full text-xs p-2 rounded-lg bg-white border border-slate-200 focus:outline-none">
           </div>
-          <button type="submit" class="w-full bg-slate-800 text-white text-xs py-2 rounded-lg font-bold">
-            클라우드 데이터베이스 전송 및 동기화
-          </button>
+          <button type="submit" class="w-full bg-slate-900 text-white text-xs py-2.5 rounded-lg font-bold">클라우드 전송 및 아카이빙</button>
         </form>
 
         <div id="notes-list-box" class="space-y-2"></div>
       </section>
 
-      <section id="screen-character" class="screen space-y-4">
-        <div class="bg-slate-900 text-white rounded-2xl p-5 text-center space-y-2 relative overflow-hidden shadow-md">
+      <section id="screen-character" class="screen flex-col space-y-4">
+        <div class="bg-slate-900 text-white rounded-2xl p-5 text-center space-y-2 relative shadow-md">
           <div id="room-avatar-emoji" class="text-6xl py-1 select-none">👧🏻🎒</div>
           <div>
-            <span class="text-[9px] text-emerald-400 font-bold uppercase tracking-widest">TOTAL ELAPSED TIME</span>
+            <span class="text-[9px] text-emerald-400 font-bold uppercase tracking-wider">TOTAL ACCUMULATED TIME</span>
             <p class="text-sm font-black text-slate-100"><span id="room-total-hours">0</span>시간 <span id="room-total-mins">0</span>분</p>
           </div>
         </div>
         <div class="space-y-1.5">
-          <label class="text-xs font-bold text-slate-400 block">학습 임계 결실 보상 인벤토리</label>
+          <label class="text-xs font-bold text-slate-400 block">누적 공부 시간 달성 업적 보상</label>
           <div id="room-inventory-grid" class="grid grid-cols-2 gap-2"></div>
         </div>
       </section>
 
     </main>
 
-    <nav id="app-bottom-nav" class="hidden absolute bottom-0 left-0 right-0 h-16 bg-white border-t border-slate-100 flex items-center justify-around px-2 z-50">
+    <nav id="app-bottom-nav" class="hidden absolute bottom-0 left-0 right-0 h-16 bg-white border-t border-slate-100 items-center justify-around px-2 z-50">
       <button onclick="handleTabClick('home', this)" class="tab-btn flex flex-col items-center justify-center flex-1 h-full text-emerald-600 font-bold">
         <div class="p-1 rounded-xl bg-emerald-50 text-emerald-600"><i data-lucide="home" class="w-4 h-4"></i></div>
         <span class="text-[9px] mt-0.5">홈</span>
@@ -462,34 +465,34 @@
   <script>
     const studyTree = {
       '자격증 취득': ['전기기사 핵심 이론', '컴퓨터활용능력 실무', '한국사 심화 정독'],
-      '학교 시험 준비': ['전자회로 전력 설계', 'C언어 포인터 배정 배열', '로봇 PLC 제어 프로그래밍'],
-      '취업 준비': ['반도체 8대 공정 마스터', '전기전자 전공 역량 면접'],
-      '영어 공부': ['TOEIC 빈출 문법 공략', 'OPIC 스피킹 트레이닝'],
-      '자기계발': ['기초 코딩 독학 원리', '인공지능 프롬프트 기획']
+      '학교 시험 준비': ['전자회로 전력 설계', 'C언어 포인터 배열', '로봇 PLC 제어 제어'],
+      '취업 준비': ['반도체 8대 공정 마스터', '전기전자 전공 면접 준비'],
+      '영어 공부': ['TOEIC 빈출 문법 공략', 'OPIC 스피킹 실전'],
+      '자기계발': ['기초 코딩 독학 프로그래밍', '인공지능 프롬프트 기획']
     };
 
-    let authMode = 'login'; // 'login' or 'join'
+    let authMode = 'login';
     let activeUid = null;
 
-    // 라이프사이클 앱 화면 라우터 변환 모듈
-    function displayTargetView(targetSelector) {
+    // 통합 단방향 뷰 스위처 라우터
+    function goToView(targetSelector) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      const activeElement = document.querySelector(targetSelector);
-      if(activeElement) activeElement.classList.add('active');
+      const activeEl = document.querySelector(targetSelector);
+      if(activeEl) activeEl.classList.add('active');
     }
 
-    // 온보딩 전방 순방향 내비게이션
-    function goToStep(stepNum) {
-      displayTargetView(`#step-${stepNum}`);
-      if(stepNum === 3) drawMainGoalsUI();
+    // 온보딩 정방향 이동
+    function goToObStep(stepNum) {
+      goToView(`#ob-step-${stepNum}`);
+      if(stepNum === 2) drawMainGoalsUI();
     }
 
-    // 온보딩 후방 역방향 내비게이션 (뒤로가기 핵심 탑재)
-    function goBackToStep(stepNum) {
-      displayTargetView(`#step-${stepNum}`);
+    // 온보딩 역방향 이동 (뒤로가기 완벽 보증)
+    function goBackObStep(stepNum) {
+      goToView(`#ob-step-${stepNum}`);
     }
 
-    // 인증 탭스위처 변경
+    // 계정 탭 전환 제어
     function switchAuthTab(mode) {
       authMode = mode;
       const btnLogin = document.getElementById('tab-btn-login');
@@ -499,65 +502,65 @@
       if(mode === 'login') {
         btnLogin.className = "bg-white p-2.5 rounded-lg text-slate-800 shadow-sm";
         btnJoin.className = "p-2.5 rounded-lg text-slate-400";
-        submitBtn.innerText = "이메일 로그인 승인";
+        submitBtn.innerText = "이메일 로그인 진행";
       } else {
         btnJoin.className = "bg-white p-2.5 rounded-lg text-slate-800 shadow-sm";
         btnLogin.className = "p-2.5 rounded-lg text-slate-400";
-        submitBtn.innerText = "새로운 이메일 회원가입 계약";
+        submitBtn.innerText = "새로운 이메일 회원가입 생성";
       }
     }
 
-    // 1단계 회원 데이터 모니터링 파트 관문
+    // 초기 실행 파크 게이트웨이 초기화 리스너
     window.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
       setGender('female');
 
-      // Firebase 관측 처리기 인터벌 리스너 대기 바인딩
       const intervalCheck = setInterval(() => {
         if(window.fbAuth) {
           clearInterval(intervalCheck);
           initFirebaseAuthStateObserver();
         }
-      }, 150);
+      }, 100);
     });
 
+    // Firebase Auth 옵저버 연동 (로그인 유지 핵심 기작)
     function initFirebaseAuthStateObserver() {
       window.fbAuth.onAuthStateChanged(async (currentUser) => {
         if (currentUser) {
           activeUid = currentUser.uid;
           window.globalState.user.email = currentUser.email;
 
-          // Cloud Firestore 유저 스냅샷 실시간 확인 검증
+          // 유저 데이터 스냅샷 조회
           const docRef = window.doc(window.fbDb, "users", activeUid);
           const docSnap = await window.getDoc(docRef);
 
           if (docSnap.exists()) {
-            // [기존 사용자 경로]: 클라우드 스토리지 파싱 주입 및 즉시 대시보드 강제 통과
+            // [기존 유저]: 온보딩을 완벽하게 스킵하고 곧바로 데이터 연동 개인 홈 진입
             window.globalState = { ...window.globalState, ...docSnap.data() };
             unlockAppMainLayout();
           } else {
-            // [완전 신규 사용자 경로]: 무데이터 초기 온보딩 스크린 단 한 번 강제 표시
+            // [계정은 있으나 데이터가 없는 최초 진입 유저]: 온보딩 첫번째 이름 입력 단계로 진입
             document.getElementById('app-header').classList.add('hidden');
             document.getElementById('app-bottom-nav').classList.add('hidden');
-            displayTargetView('#step-1');
+            goToView('#ob-step-1');
           }
         } else {
-          // 인증이 해제되었을 때 인증 게이트 유도
+          // [미인증 상태]: 첫 화면 레이아웃 노출 보증
           activeUid = null;
           document.getElementById('app-header').classList.add('hidden');
           document.getElementById('app-bottom-nav').classList.add('hidden');
-          displayTargetView('#screen-auth');
+          goToView('#screen-welcome');
         }
       });
     }
 
-    // 이메일 비밀번호 인증 가동 핸들러
+    // 이메일 패스워드 인증 처리 액션 핸들러
     async function handleEmailAuthAction() {
       const email = document.getElementById('auth-email').value.trim();
       const pw = document.getElementById('auth-password').value.trim();
 
-      if(!email || !pw) { alert('인증에 필요한 공란을 남김없이 채우십시오.'); return; }
-      displayTargetView('#screen-loading');
+      if(!email || !pw) { alert('공란을 입력해 주세요.'); return; }
+      goToView('#screen-gate-loading');
 
       try {
         if(authMode === 'login') {
@@ -566,45 +569,45 @@
           await window.createUserWithEmailAndPassword(window.fbAuth, email, pw);
         }
       } catch (err) {
-        alert(`인증 처리 오류가 귀착되었습니다: ${err.message}`);
-        displayTargetView('#screen-auth');
+        alert(`인증 처리 오류: ${err.message}`);
+        goToView('#screen-auth');
       }
     }
 
-    // 구글 소셜 연동 처리기
+    // 구글 소셜 간편 가입/로그인 처리 모듈
     async function handleGoogleLogin() {
-      displayTargetView('#screen-loading');
+      goToView('#screen-gate-loading');
       try {
         await window.signInWithPopup(window.fbAuth, window.googleProvider);
       } catch (err) {
-        alert(`Google 연동 중 에러가 유출되었습니다: ${err.message}`);
-        displayTargetView('#screen-auth');
+        alert(`Google 연동 실패: ${err.message}`);
+        goToView('#screen-auth');
       }
     }
 
     // 안전 로그아웃 요청 처리기
     async function requestLogout() {
-      if(confirm('안전하게 세션을 해제하고 로그아웃 하시겠습니까?')) {
-        displayTargetView('#screen-loading');
+      if(confirm('안전하게 로그아웃하고 세션을 파기할까요?')) {
+        goToView('#screen-gate-loading');
         await window.signOut(window.fbAuth);
       }
     }
 
-    // 온보딩 프로세스 데이터 가동식 제어
-    function submitStep2() {
+    // 온보딩 비즈니스 플로우 스크립트 파트
+    function submitObStep1() {
       const name = document.getElementById('reg-username').value.trim();
-      if(!name) { alert('플레이어 식별 닉네임을 지정해야 합니다.'); return; }
+      if(!name) { alert('닉네임을 입력하세요.'); return; }
       window.globalState.user.name = name;
-      goToStep(3);
+      goToObStep(2);
     }
 
     function drawMainGoalsUI() {
-      const box = document.getElementById('goal-options-box');
+      const box = document.getElementById('main-goal-options-box');
       box.innerHTML = '';
       Object.keys(studyTree).forEach(key => {
         const btn = document.createElement('button');
         btn.innerText = `🎯 ${key}`;
-        btn.className = `goal-btn w-full p-4 text-xs font-bold text-left rounded-xl border transition ${window.globalState.user.mainGoal === key ? 'bg-emerald-50 border-2 border-emerald-500 text-emerald-700':'bg-slate-50 border-slate-200'}`;
+        btn.className = `w-full p-4 text-xs font-bold text-left rounded-xl border transition ${window.globalState.user.mainGoal === key ? 'bg-emerald-50 border-2 border-emerald-500 text-emerald-700':'bg-slate-50 border-slate-200'}`;
         btn.onclick = () => {
           window.globalState.user.mainGoal = key;
           drawMainGoalsUI();
@@ -613,14 +616,14 @@
       });
     }
 
-    function submitStep3() {
-      if(!window.globalState.user.mainGoal) { alert('타겟 핵심 도메인을 정비해 주십시오.'); return; }
+    function submitObStep2() {
+      if(!window.globalState.user.mainGoal) { alert('공부 대분류 목적을 선택해 주세요.'); return; }
       drawSubGoalsUI();
-      goToStep(4);
+      goToObStep(3);
     }
 
     function drawSubGoalsUI() {
-      const box = document.getElementById('sub-category-list-container');
+      const box = document.getElementById('sub-goal-options-box');
       box.innerHTML = '';
       const pool = studyTree[window.globalState.user.mainGoal] || [];
       pool.forEach(sub => {
@@ -635,9 +638,9 @@
       });
     }
 
-    function submitStep4() {
-      if(!window.globalState.user.subGoal) { alert('학습 타겟 과목을 확정해야 플래너가 조직됩니다.'); return; }
-      goToStep(5);
+    function submitObStep3() {
+      if(!window.globalState.user.subGoal) { alert('공부 분야 과목을 지정하세요.'); return; }
+      goToObStep(4);
     }
 
     function selectTier(t, btn) {
@@ -650,62 +653,53 @@
       window.globalState.avatar.gender = g;
       document.getElementById('gender-m').className = g === 'male' ? "p-2.5 text-xs font-bold bg-emerald-50 border-2 border-emerald-500 text-emerald-700 rounded-xl flex items-center justify-center gap-1.5":"p-2.5 text-xs font-bold bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-center gap-1.5";
       document.getElementById('gender-f').className = g === 'female' ? "p-2.5 text-xs font-bold bg-emerald-50 border-2 border-emerald-500 text-emerald-700 rounded-xl flex items-center justify-center gap-1.5":"p-2.5 text-xs font-bold bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-center gap-1.5";
-      drawHairSlotsUI();
-      refreshPreviewUI();
+      drawHairSlotsUI(); refreshPreviewUI();
     }
 
     function drawHairSlotsUI() {
-      const box = document.getElementById('hair-slots-container');
-      box.innerHTML = '';
+      const box = document.getElementById('hair-slots-container'); box.innerHTML = '';
       const pool = window.globalState.avatar.gender === 'male'
-        ? [{n:'크루 컷 헤어', e:'👦'}, {n:'댄디 가르마', e:'🧑'}, {n:'러닝 스포티', e:'🧢'}]
-        : [{n:'단정 보브 단발', e:'👧'}, {n:'찰랑 롱 에센스', e:'👩'}, {n:'테일 바인딩 묶음', e:'👱‍♀️'}];
+        ? [{n:'숏 컷 모히칸', e:'👦'}, {n:'댄디 가르마펌', e:'🧑'}, {n:'볼캡 야구모자', e:'🧢'}]
+        : [{n:'단정 단발 보브', e:'👧'}, {n:'엘레강스 볼륨', e:'👩'}, {n:'포니테일 리본', e:'👱‍♀️'}];
 
       pool.forEach(h => {
-        const btn = document.createElement('button');
-        btn.innerText = h.n;
+        const btn = document.createElement('button'); btn.innerText = h.n;
         btn.className = `p-2.5 text-xs font-semibold rounded-lg border text-center ${window.globalState.avatar.trait === h.e ? 'bg-emerald-50 border-emerald-500 text-emerald-800 font-bold border-2':'bg-white border-slate-200'}`;
-        btn.onclick = () => {
-          window.globalState.avatar.trait = h.e;
-          drawHairSlotsUI();
-          refreshPreviewUI();
-        };
+        btn.onclick = () => { window.globalState.avatar.trait = h.e; drawHairSlotsUI(); refreshPreviewUI(); };
         box.appendChild(btn);
       });
     }
 
     function getAvatarVisualRepresentation(av) {
-      if (av.status === 'tired') return '💤' + (av.gender === 'male' ? '👦':'👧') + '💧';
-      if (av.level >= 30) return '🧙‍♂️' + av.trait + '✨';
-      if (av.level >= 10) return '📚' + av.trait;
+      if (av.status === 'tired') return '💤' + (av.gender === 'male' ? '👦':'👧');
       return av.trait;
     }
 
     function refreshPreviewUI() {
       document.getElementById('preview-avatar-emoji').innerText = getAvatarVisualRepresentation(window.globalState.avatar);
-      document.getElementById('preview-avatar-desc').innerText = `${window.globalState.avatar.gender==='male'?'남성':'여성'} 클래스 · 레벨 1 모험가 사양`;
+      document.getElementById('preview-avatar-desc').innerText = `${window.globalState.avatar.gender==='male'?'남성':'여성'} 클래스 · Lv.1 기본 장비형`;
     }
 
-    // 온보딩 정보 최종 확정 및 최초의 클라우드 스냅샷 적재 모듈 (Lv.1 확정)
+    // 온보딩 완료 시점: AI 스티가 공부 계획을 할당하고 최초의 Lv.1 문서를 원격에 기록함
     async function finalizeOnboardingAndUploadCloud() {
       const ddayVal = document.getElementById('reg-target-date').value;
-      if(!ddayVal) { alert('D-Day 데드라인 날짜를 배정 완료해 주십시오.'); return; }
+      if(!ddayVal) { alert('목표 데드라인 날짜를 배정해 주십시오.'); goToObStep(4); return; }
 
       window.globalState.user.ddayStr = ddayVal;
       window.globalState.user.limitMinutes = parseInt(document.getElementById('reg-daily-time').value);
 
-      // AI 스티 학습 플래너 퀘스트 트리거 생성 주입 (Lv.1 초기 미션셋)
+      // AI 스티(STDY) 공부 계획 생성 주입 연산 파트 (Lv.1 초기 세팅용)
       const currentSub = window.globalState.user.subGoal;
       window.globalState.todoList = [
-        { id: 201, slot: '오전 일과', target: currentSub, text: '기초 개념 정독 및 서브 핵심 요약본 정리 1회차', clear: false },
-        { id: 202, slot: '오후 일과', target: currentSub, text: '유형 기본 연습 문제집 집중 모드 15문항 정밀 풀이', clear: false },
-        { id: 203, slot: '심야 리포트', target: 'AI 공통 오답', text: '오개념 추출 원인 디버깅 폼 1회 기입 완성하기', clear: false }
+        { id: 101, slot: '오전 미션', target: currentSub, text: '기초 핵심 개념 기본서 탐독 및 오개념 정리 요약', clear: false },
+        { id: 102, slot: '오후 미션', target: currentSub, text: '적중 유형 핵심 집중 트레이닝 단원평가 12문항 풀이', clear: false },
+        { id: 103, slot: '심야 루틴', target: 'AI 오답', text: '틀린 문제에 대한 원인 분석 피드백 오답노트 작성', clear: false }
       ];
 
-      displayTargetView('#screen-loading');
+      goToView('#screen-gate-loading');
 
       try {
-        // Firebase Cloud Firestore 영구 격리 디바이스 도큐먼트 기록 배정
+        // Cloud Firestore 영구 도큐먼트 최초 수립
         const docRef = window.doc(window.fbDb, "users", activeUid);
         await window.setDoc(docRef, {
           user: window.globalState.user,
@@ -716,21 +710,21 @@
 
         unlockAppMainLayout();
       } catch (err) {
-        alert(`클라우드 동기화 셋 중 예외 분출: ${err.message}`);
-        goToStep(6);
+        alert(`클라우드 적재 도중 예외가 분출되었습니다: ${err.message}`);
+        goToObStep(5);
       }
     }
 
-    // 메인 애플리케이션 프레임워크 락 해제 및 동기화 변환
+    // 메인 레이아웃 가동 해제 통과 인터페이스
     function unlockAppMainLayout() {
       document.getElementById('app-header').classList.remove('hidden');
+      document.getElementById('app-header').classList.add('flex');
       document.getElementById('app-bottom-nav').classList.remove('hidden');
+      document.getElementById('app-bottom-nav').classList.add('flex');
 
-      // 오답 과목 셀렉터 할당
       const targetSub = window.globalState.user.subGoal;
       document.getElementById('form-sub-select').innerHTML = `<option value="${targetSub}">${targetSub}</option><option value="AI 공통 오답">AI 공통 오답</option>`;
 
-      // 디데이 역산 모듈
       const diff = new Date(window.globalState.user.ddayStr) - new Date();
       const remainDays = Math.ceil(diff / (1000 * 60 * 60 * 24));
       document.getElementById('header-dday').innerText = remainDays >= 0 ? `D-${remainDays}` : `D+${Math.abs(remainDays)}`;
@@ -741,7 +735,7 @@
       handleTabClick('home', document.querySelector('.tab-btn'));
     }
 
-    // 상위 실시간 클라우드 푸시 비동기 패치 어댑터
+    // 전역 비동기 클라우드 동기화 패치 트리거
     async function pushLatestStateToCloud() {
       if(!activeUid) return;
       try {
@@ -752,19 +746,18 @@
           wrongNotes: window.globalState.wrongNotes
         });
       } catch(e) {
-        console.error("클라우드 백업 전송 도중 실패 세션 우회됨:", e);
+        console.error("클라우드 백업 전송 실패:", e);
       }
     }
 
-    // 네비게이션 무브먼트 핸들러
+    // 하단 글로벌 탭 바 제어기
     function handleTabClick(tabId, element) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      const activeScreen = document.getElementById(`screen-${tabId}`);
-      if(activeScreen) activeScreen.classList.add('active');
+      const targetScreen = document.getElementById(`screen-${tabId}`);
+      if(targetScreen) targetScreen.classList.add('active');
 
       document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('text-emerald-600', 'font-bold');
-        btn.classList.add('text-slate-400');
+        btn.classList.remove('text-emerald-600', 'font-bold'); btn.classList.add('text-slate-400');
         btn.querySelector('div').classList.remove('bg-emerald-50', 'text-emerald-600');
       });
 
@@ -791,40 +784,30 @@
       document.getElementById('stat-kp').innerText = av.stats.kp;
 
       document.getElementById('dash-avatar-emoji').innerText = getAvatarVisualRepresentation(av);
-
-      let rnk = '초보 견습 모험가';
-      if(av.level >= 30) rnk = '정예 수석 하이 마스터';
-      else if(av.level >= 10) rnk = '정규 실전 학술 전사';
-      document.getElementById('dash-avatar-title').innerText = `Lv.${av.level} ${rnk}`;
-
-      document.getElementById('sti-dynamic-speech').innerText = `반갑습니다, ${window.globalState.user.name} 플레이어님! 목표 필드 [${window.globalState.user.subGoal}] 세션의 실시간 탐색 준비를 끝마쳤습니다.`;
+      document.getElementById('sti-dynamic-speech').innerText = `대기 완료, ${window.globalState.user.name} 님! 타겟 [${window.globalState.user.subGoal}] 세션 런타임 분석 준비가 완료되었습니다.`;
 
       const clr = window.globalState.todoList.filter(t => t.clear).length;
       const total = window.globalState.todoList.length;
       const pct = total > 0 ? Math.round((clr / total) * 100) : 0;
-      document.getElementById('dash-todo-summary').innerText = `배정 미션 총 ${total}개 중 ${clr}개 완수 완료`;
+      document.getElementById('dash-todo-summary').innerText = `총 미션 ${total}개 중 ${clr}개 수행 완료`;
       document.getElementById('dash-todo-pct-circle').innerText = `${pct}%`;
     }
 
     function drawPlannerUI() {
-      const box = document.getElementById('planner-list-box');
-      box.innerHTML = '';
+      const box = document.getElementById('planner-list-box'); box.innerHTML = '';
       window.globalState.todoList.forEach(todo => {
         const row = document.createElement('div');
         row.onclick = async () => {
           todo.clear = !todo.clear;
           if(todo.clear) {
-            window.globalState.avatar.exp += 35;
-            window.globalState.avatar.stats.kp += 5;
+            window.globalState.avatar.exp += 35; window.globalState.avatar.stats.kp += 5;
             if(window.globalState.avatar.exp >= window.globalState.avatar.maxExp) {
               window.globalState.avatar.exp -= window.globalState.avatar.maxExp;
               window.globalState.avatar.level++;
-              alert(`🎉 LEVEL UP! 아바타 랭크가 도약했습니다! (현재 Level: ${window.globalState.avatar.level})`);
+              alert(`🎉 아바타 등급 레벨 업! 현재 Level: ${window.globalState.avatar.level}`);
             }
           }
-          drawPlannerUI();
-          syncStateToDashboard();
-          await pushLatestStateToCloud();
+          drawPlannerUI(); syncStateToDashboard(); await pushLatestStateToCloud();
         };
 
         const clr = todo.clear;
@@ -842,20 +825,16 @@
       });
     }
 
-    // 타이머 가동 기계식 장치 스위치
     function toggleTimerCore() {
       const btn = document.getElementById('btn-timer-ctrl-text');
       const ring = document.getElementById('timer-circle-ui');
 
       if (window.globalState.timer.run) {
-        clearInterval(window.globalState.timer.threadId);
-        window.globalState.timer.run = false;
-        btn.innerText = '집중 시작';
-        ring.className = "w-40 h-40 rounded-full border-[5px] border-emerald-500 flex flex-col items-center justify-center mx-auto shadow-inner bg-slate-50";
+        clearInterval(window.globalState.timer.threadId); window.globalState.timer.run = false; btn.innerText = '집중 시작';
+        ring.className = "w-36 h-36 rounded-full border-4 border-emerald-500 flex flex-col items-center justify-center mx-auto shadow-inner bg-slate-50";
       } else {
-        window.globalState.timer.run = true;
-        btn.innerText = '몰입 중단';
-        ring.className = "w-40 h-40 rounded-full border-[5px] border-amber-500 flex flex-col items-center justify-center mx-auto shadow-inner bg-slate-50 animate-pulse";
+        window.globalState.timer.run = true; btn.innerText = '몰입 중단';
+        ring.className = "w-36 h-36 rounded-full border-4 border-amber-500 flex flex-col items-center justify-center mx-auto shadow-inner bg-slate-50 animate-pulse";
 
         window.globalState.timer.threadId = setInterval(async () => {
           window.globalState.timer.leftSeconds--;
@@ -864,50 +843,39 @@
           document.getElementById('timer-digits').innerText = `${mm}:${ss}`;
 
           if(window.globalState.timer.leftSeconds <= 0) {
-            clearInterval(window.globalState.timer.threadId);
-            window.globalState.timer.run = false;
-
+            clearInterval(window.globalState.timer.threadId); window.globalState.timer.run = false;
             if(window.globalState.timer.mode === 'study') {
-              alert('🎯 25분 몰입 연마를 완수했습니다! 자가 진단 평가를 하세요.');
-              window.globalState.avatar.totalTime += 25;
-              window.globalState.avatar.exp += 40;
+              alert('🎯 25분 집중을 달성했습니다! 자가 진단을 완수하세요.');
+              window.globalState.avatar.totalTime += 25; window.globalState.avatar.exp += 40;
               document.getElementById('evaluation-widget').classList.remove('hidden');
             } else {
-              alert('휴식 스케줄 타임 오버! 다시 집중 전선으로 복귀합니다.');
-              window.globalState.timer.mode = 'study';
-              window.globalState.timer.leftSeconds = 25 * 60;
+              alert('휴식 종료! 다시 공부 모드로 전환합니다.');
+              window.globalState.timer.mode = 'study'; window.globalState.timer.leftSeconds = 25 * 60;
               document.getElementById('timer-mode-label').innerText = 'Focus Time';
             }
-            resetTimerCore();
-            await pushLatestStateToCloud();
+            resetTimerCore(); await pushLatestStateToCloud();
           }
         }, 1000);
       }
     }
 
     function resetTimerCore() {
-      clearInterval(window.globalState.timer.threadId);
-      window.globalState.timer.run = false;
+      clearInterval(window.globalState.timer.threadId); window.globalState.timer.run = false;
       window.globalState.timer.leftSeconds = window.globalState.timer.mode === 'study' ? 25 * 60 : 5 * 60;
       document.getElementById('timer-digits').innerText = window.globalState.timer.mode === 'study' ? "25:00":"05:00";
       document.getElementById('btn-timer-ctrl-text').innerText = '집중 시작';
-      document.getElementById('timer-circle-ui').className = "w-40 h-40 rounded-full border-[5px] border-emerald-500 flex flex-col items-center justify-center mx-auto shadow-inner bg-slate-50";
+      document.getElementById('timer-circle-ui').className = "w-36 h-36 rounded-full border-4 border-emerald-500 flex flex-col items-center justify-center mx-auto shadow-inner bg-slate-50";
     }
 
     async function commitEvaluation(score) {
       window.globalState.avatar.stats.wp += score;
       document.getElementById('evaluation-widget').classList.add('hidden');
-      window.globalState.timer.mode = 'break';
-      window.globalState.timer.leftSeconds = 5 * 60;
+      window.globalState.timer.mode = 'break'; window.globalState.timer.leftSeconds = 5 * 60;
       document.getElementById('timer-mode-label').innerText = 'Break Time';
-      resetTimerCore();
-      syncStateToDashboard();
-      await pushLatestStateToCloud();
+      resetTimerCore(); syncStateToDashboard(); await pushLatestStateToCloud();
     }
 
-    function toggleNoteForm() {
-      document.getElementById('note-form').classList.toggle('hidden');
-    }
+    function toggleNoteForm() { document.getElementById('note-form').classList.toggle('hidden'); }
 
     async function addWrongNote(e) {
       e.preventDefault();
@@ -916,19 +884,14 @@
       const reason = document.getElementById('form-reason').value.trim();
 
       window.globalState.wrongNotes.unshift({ id: Date.now(), subject: sub, title: title, reason: reason });
-      document.getElementById('form-title').value = '';
-      document.getElementById('form-reason').value = '';
-      toggleNoteForm();
-      drawNotesUI();
-      await pushLatestStateToCloud();
+      document.getElementById('form-title').value = ''; document.getElementById('form-reason').value = '';
+      toggleNoteForm(); drawNotesUI(); await pushLatestStateToCloud();
     }
 
     function drawNotesUI() {
-      const box = document.getElementById('notes-list-box');
-      box.innerHTML = '';
+      const box = document.getElementById('notes-list-box'); box.innerHTML = '';
       if(window.globalState.wrongNotes.length === 0) {
-        box.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">누적 수집 오답 에러가 비어있습니다. 아주 쾌적합니다!</p>`;
-        return;
+        box.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">수집된 오답 데이터가 없습니다.</p>`; return;
       }
       window.globalState.wrongNotes.forEach(n => {
         const card = document.createElement('div');
@@ -936,7 +899,7 @@
         card.innerHTML = `
           <div class="flex justify-between items-center"><span class="text-[9px] font-extrabold bg-rose-50 text-rose-700 px-1.5 py-0.2 rounded">${n.subject}</span></div>
           <h4 class="text-xs font-bold text-slate-800">${n.title}</h4>
-          <p class="text-[11px] p-2 bg-slate-50 border rounded-lg text-slate-600"><span class="font-bold text-rose-500">AI 트랙커 분석:</span> ${n.reason}</p>
+          <p class="text-[11px] p-2 bg-slate-50 border rounded-lg text-slate-600"><span class="font-bold text-rose-500">원인 디버깅:</span> ${n.reason}</p>
         `;
         box.appendChild(card);
       });
@@ -947,8 +910,7 @@
       document.getElementById('room-total-mins').innerText = window.globalState.avatar.totalTime % 60;
       document.getElementById('room-avatar-emoji').innerText = getAvatarVisualRepresentation(window.globalState.avatar);
 
-      const grid = document.getElementById('room-inventory-grid');
-      grid.innerHTML = '';
+      const grid = document.getElementById('room-inventory-grid'); grid.innerHTML = '';
       window.globalState.achievements.forEach(item => {
         const active = window.globalState.avatar.totalTime >= item.timeReq;
         const slot = document.createElement('div');
@@ -956,7 +918,7 @@
         slot.innerHTML = `
           <span class="text-2xl">${active ? item.icon : '🔒'}</span>
           <span class="text-[10px] font-bold text-slate-700 mt-1">${item.name}</span>
-          <span class="text-[8px] text-slate-400">${item.timeReq}분 조건</span>
+          <span class="text-[8px] text-slate-400">${item.timeReq}분 달성</span>
         `;
         grid.appendChild(slot);
       });
