@@ -1,0 +1,26 @@
+name: Deploy Web App
+
+# 경고 메시지를 강제로 숨기는 설정입니다.
+env:
+  ACTIONS_FLAGS: --no-deprecation
+  NODE_OPTIONS: --no-deprecation
+
+on:
+  push:
+    branches: [ main, master ] # main이나 master 브랜치에 푸시될 때 작동
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: github-pages
+          path: .
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
